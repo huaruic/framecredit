@@ -59,13 +59,15 @@ class LocalAppTest(unittest.TestCase):
             app, url = self._start_app(env)
             session = f"framecredit-{os.getpid()}"
             script = f"""async page => {{
-                await page.locator('#creator-name').fill('小明');
                 await page.locator('#x-handle').fill('@xiaoming');
+                const marker = await page.locator('#identity-preview').textContent();
+                if (marker !== 'X · @xiaoming') throw new Error(`wrong marker preview: ${{marker}}`);
                 await page.locator('#source-video').setInputFiles({json.dumps(str(source))});
+                await page.locator('#preview-canvas').waitFor({{state: 'visible', timeout: 10000}});
                 await page.locator('#process-video').click();
                 await page.waitForTimeout(500);
                 const progress = await page.locator('#progress').textContent();
-                if (!progress.includes('已用时')) throw new Error(`missing elapsed progress: ${{progress}}`);
+                if (!progress.includes('elapsed')) throw new Error(`missing elapsed progress: ${{progress}}`);
                 await page.locator('#result.visible').waitFor({{state: 'visible', timeout: 30000}});
                 const output = await page.locator('#result-path').textContent();
                 if (!output.endsWith('lesson-attributed.mp4')) throw new Error(`wrong result: ${{output}}`);
@@ -119,10 +121,11 @@ class LocalAppTest(unittest.TestCase):
             finally:
                 self._stop_app(app)
 
-            self.assertIn('lang="zh-CN"', page)
-            self.assertIn('id="creator-name"', page)
+            self.assertIn('lang="en"', page)
+            self.assertNotIn('id="creator-name"', page)
             self.assertIn('id="x-handle"', page)
             self.assertIn('id="identity-preview"', page)
+            self.assertIn('X · @handle', page)
             self.assertIn('id="drop-zone"', page)
             self.assertIn('id="source-video"', page)
             self.assertIn('id="progress"', page)
@@ -138,29 +141,44 @@ class LocalAppTest(unittest.TestCase):
             first_app, first_url = self._start_app(env)
             try:
                 initial = self._json_request(f"{first_url}/api/identity")
-                self.assertEqual(initial, {"creator_name": "", "x_handle": ""})
+                self.assertEqual(initial, {"x_handle": ""})
 
                 saved = self._json_request(
                     f"{first_url}/api/identity",
                     method="PUT",
-                    body={"creator_name": "小明", "x_handle": "@xiaoming"},
+                    body={"x_handle": "@xiaoming"},
                 )
-                self.assertEqual(
-                    saved,
-                    {"creator_name": "小明", "x_handle": "@xiaoming"},
-                )
+                self.assertEqual(saved, {"x_handle": "@xiaoming"})
             finally:
                 self._stop_app(first_app)
 
             second_app, second_url = self._start_app(env)
             try:
                 retained = self._json_request(f"{second_url}/api/identity")
-                self.assertEqual(
-                    retained,
-                    {"creator_name": "小明", "x_handle": "@xiaoming"},
-                )
+                self.assertEqual(retained, {"x_handle": "@xiaoming"})
             finally:
                 self._stop_app(second_app)
+
+    def test_saved_handle_survives_the_previous_identity_file_shape(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="framecredit-app-test-") as temp_dir:
+            app_home = Path(temp_dir) / "app-data"
+            app_home.mkdir(parents=True)
+            (app_home / "identity.json").write_text(
+                json.dumps(
+                    {"creator_name": "Previous Name", "x_handle": "@xiaoming"}
+                ),
+                encoding="utf-8",
+            )
+            env = os.environ.copy()
+            env["PYTHONPATH"] = str(ROOT / "src")
+            env["FRAMECREDIT_HOME"] = str(app_home)
+
+            app, url = self._start_app(env)
+            try:
+                retained = self._json_request(f"{url}/api/identity")
+                self.assertEqual(retained, {"x_handle": "@xiaoming"})
+            finally:
+                self._stop_app(app)
 
     @unittest.skipUnless(FFMPEG, "ffmpeg is required")
     def test_local_interface_processes_source_and_reports_result(self) -> None:
@@ -206,7 +224,7 @@ class LocalAppTest(unittest.TestCase):
                 self._json_request(
                     f"{url}/api/identity",
                     method="PUT",
-                    body={"creator_name": "小明", "x_handle": "@xiaoming"},
+                    body={"x_handle": "@xiaoming"},
                 )
                 request = Request(
                     f"{url}/api/process",

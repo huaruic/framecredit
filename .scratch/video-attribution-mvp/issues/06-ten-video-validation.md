@@ -17,7 +17,7 @@ This is a product validation exercise, not an expansion of the rendering feature
 - [ ] Re-encoded, lightly cropped, and caption-overlay renditions are generated for every Attributed Export.
 - [ ] At least 80% of the agreed transformed renditions retain a clearly readable Creator Identity, or the MVP is explicitly recorded as failing this target.
 - [ ] Human observers attempt to identify the Creator within five seconds from representative renditions.
-- [ ] Human observers attempt to locate the likely original using the Creator Identity and Source Title.
+- [ ] Human observers attempt to locate the likely Creator using the X handle.
 - [ ] Active per-video Creator interaction time is recorded and compared with the thirty-second target.
 - [ ] Visual obstruction is reviewed and recorded for every Source Video.
 - [ ] Results, failures, and the resulting go/no-go decision are saved with the Validation Set report.
@@ -26,5 +26,5 @@ This is a product validation exercise, not an expansion of the rendering feature
 
 - `02-local-drop-zone.md`
 - `03-distributed-creator-marker.md`
-- `04-repeated-source-cards.md`
+- `04-compact-x-handle-marker.md`
 - `05-safe-errors-and-outputs.md`

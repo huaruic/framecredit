@@ -19,7 +19,6 @@ from .processing import ProcessRequest, ProcessingError, create_attributed_expor
 
 @dataclass(frozen=True)
 class CreatorIdentity:
-    creator_name: str = ""
     x_handle: str = ""
 
 
@@ -31,7 +30,6 @@ class IdentityStore:
         try:
             payload = json.loads(self._path.read_text(encoding="utf-8"))
             return CreatorIdentity(
-                creator_name=str(payload.get("creator_name", "")),
                 x_handle=str(payload.get("x_handle", "")),
             )
         except (FileNotFoundError, json.JSONDecodeError, OSError, AttributeError):
@@ -114,13 +112,12 @@ def _handler_for(
                 length = int(self.headers.get("Content-Length", "0"))
                 payload = json.loads(self.rfile.read(length).decode("utf-8"))
                 identity = CreatorIdentity(
-                    creator_name=str(payload["creator_name"]).strip(),
                     x_handle=str(payload["x_handle"]).strip(),
                 )
                 saved = store.save(identity)
             except (KeyError, TypeError, ValueError, json.JSONDecodeError, OSError):
                 self._send_json(
-                    {"error": "creator_name and x_handle are required"},
+                    {"error": "x_handle is required"},
                     status=HTTPStatus.BAD_REQUEST,
                 )
                 return
@@ -153,7 +150,7 @@ def _handler_for(
                 return
 
             identity = store.load()
-            if not identity.creator_name or not identity.x_handle:
+            if not identity.x_handle:
                 self._send_json(
                     {"error": "save the Creator Identity before processing"},
                     status=HTTPStatus.BAD_REQUEST,
@@ -185,7 +182,6 @@ def _handler_for(
                         ProcessRequest(
                             source=source,
                             output=output,
-                            creator_name=identity.creator_name,
                             x_handle=identity.x_handle,
                         )
                     )
@@ -215,7 +211,8 @@ def _handler_for(
                 "Content-Security-Policy",
                 "default-src 'self'; style-src 'unsafe-inline'; "
                 "script-src 'unsafe-inline'; connect-src 'self'; "
-                "img-src 'self' data:; object-src 'none'; base-uri 'none'",
+                "img-src 'self' data:; media-src 'self' blob:; "
+                "object-src 'none'; base-uri 'none'",
             )
             self.end_headers()
             self.wfile.write(body)

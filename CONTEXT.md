@@ -9,7 +9,8 @@ The person whose original video and public identity should remain recognizable a
 _Avoid_: Owner, uploader, account
 
 **Creator Identity**:
-The X display name and unique X handle presented to viewers as the identity of the Creator.
+The Creator's unique X handle, presented as `X · @handle` so viewers can identify
+the platform and search for the Creator after an Ordinary Repost.
 _Avoid_: Account details, profile metadata, watermark text
 
 **Source Video**:
@@ -27,18 +28,6 @@ _Avoid_: Watermark, logo, badge
 **Creator Marker**:
 The compact, persistent part of the Source Signature that shows the Creator Identity during normal playback.
 _Avoid_: Corner watermark, floating logo
-
-**Source Card**:
-The larger, repeated part of the Source Signature that emphasizes the Creator Identity and Source Title.
-_Avoid_: End card, intro card, QR screen
-
-**Source Title**:
-A concise, human-readable video title that helps a viewer search for the Creator's original publication.
-_Avoid_: Filename, post caption, metadata title
-
-**Source Clue**:
-Human-readable information that helps a viewer locate the original publication, primarily the Creator Identity and Source Title.
-_Avoid_: Proof, evidence, canonical URL
 
 **Ordinary Repost**:
 A copied upload that preserves most of the audiovisual content, including versions that are re-encoded or lightly edited.

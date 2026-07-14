@@ -17,6 +17,22 @@ FFPROBE = shutil.which("ffprobe")
 
 @unittest.skipUnless(FFMPEG and FFPROBE, "ffmpeg and ffprobe are required")
 class ProcessCommandTest(unittest.TestCase):
+    def test_process_command_requires_only_the_x_handle_for_creator_identity(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(ROOT / "src")
+
+        result = subprocess.run(
+            [sys.executable, "-m", "framecredit", "process", "--help"],
+            cwd=ROOT,
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--x-handle", result.stdout)
+        self.assertNotIn("--creator-name", result.stdout)
+
     def test_creator_can_generate_a_playable_attributed_export(self) -> None:
         with tempfile.TemporaryDirectory(prefix="framecredit-test-") as temp_dir:
             workdir = Path(temp_dir)
@@ -62,8 +78,6 @@ class ProcessCommandTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "小明",
                     "--x-handle",
                     "@xiaoming",
                     "--output",
@@ -125,8 +139,6 @@ class ProcessCommandTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "小红",
                     "--x-handle",
                     "@xiaoming",
                     "--output",
@@ -164,8 +176,6 @@ class ProcessCommandTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "小明",
                     "--x-handle",
                     "@another",
                     "--output",
@@ -206,42 +216,31 @@ class ProcessCommandTest(unittest.TestCase):
                 "the exported frame should visibly contain the creator marker",
             )
 
-            name_frame = workdir / "different-name.png"
             handle_frame = workdir / "different-handle.png"
-            for video, image in (
-                (misleading_suffix, name_frame),
-                (different_handle, handle_frame),
-            ):
-                subprocess.run(
-                    [
-                        FFMPEG,
-                        "-hide_banner",
-                        "-loglevel",
-                        "error",
-                        "-y",
-                        "-ss",
-                        "1",
-                        "-i",
-                        str(video),
-                        "-frames:v",
-                        "1",
-                        str(image),
-                    ],
-                    check=True,
-                )
+            subprocess.run(
+                [
+                    FFMPEG,
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-y",
+                    "-ss",
+                    "1",
+                    "-i",
+                    str(different_handle),
+                    "-frames:v",
+                    "1",
+                    str(handle_frame),
+                ],
+                check=True,
+            )
 
             with (
                 Image.open(frame).convert("RGB") as original_identity,
-                Image.open(name_frame).convert("RGB") as changed_name,
                 Image.open(handle_frame).convert("RGB") as changed_handle,
             ):
                 original_marker = original_identity.crop((0, 0, 420, 100))
-                name_marker = changed_name.crop((0, 0, 420, 100))
                 handle_marker = changed_handle.crop((0, 0, 420, 100))
-                self.assertIsNotNone(
-                    ImageChops.difference(original_marker, name_marker).getbbox(),
-                    "changing the creator name should change the visible marker",
-                )
                 self.assertIsNotNone(
                     ImageChops.difference(original_marker, handle_marker).getbbox(),
                     "changing the X handle should change the visible marker",

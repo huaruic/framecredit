@@ -8,14 +8,13 @@ import tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 
-MARKER_INTERVAL_SECONDS = 12
+MARKER_INTERVAL_SECONDS = 30
 
 
 @dataclass(frozen=True)
 class ProcessRequest:
     source: Path
     output: Path
-    creator_name: str
     x_handle: str
 
 
@@ -38,7 +37,6 @@ def create_attributed_export(request: ProcessRequest) -> Path:
         margin = max(10, round(height * 0.03))
         _render_creator_marker(
             marker_path,
-            creator_name=request.creator_name,
             x_handle=request.x_handle,
             video_width=width,
             video_height=height,
@@ -86,78 +84,62 @@ def _video_dimensions(ffprobe: str, source: Path) -> tuple[int, int]:
 def _render_creator_marker(
     output: Path,
     *,
-    creator_name: str,
     x_handle: str,
     video_width: int,
     video_height: int,
     margin: int,
 ) -> None:
-    single_line = f"原创：{creator_name}  {x_handle}"
-    lines = (single_line,)
-    base_font_size = max(16, round(video_height * 0.045))
-    minimum_font_size = max(6, round(video_height * 0.015))
+    handle = x_handle.strip()
+    if not handle.startswith("@"):
+        handle = f"@{handle}"
+    text = f"X · {handle}"
+    base_font_size = max(12, round(video_height * 0.034))
+    minimum_font_size = max(6, round(video_height * 0.018))
     font_size = base_font_size
     font_path = _find_font()
     available_width = video_width - (margin * 2)
-    max_width = max(1, min(available_width, int(video_width * 0.35)))
+    width_ratio = 0.35 if video_width < 480 else 0.20
+    max_width = max(1, min(available_width, int(video_width * width_ratio)))
     probe = Image.new("RGBA", (1, 1))
     probe_draw = ImageDraw.Draw(probe)
 
     while True:
         font = ImageFont.truetype(font_path, font_size)
-        padding_x = max(3, round(font_size * 0.65))
-        spacing = max(2, round(font_size * 0.18))
-        text = "\n".join(lines)
-        bounds = probe_draw.multiline_textbbox(
-            (0, 0),
-            text,
-            font=font,
-            spacing=spacing,
+        stroke_width = max(1, round(font_size * 0.09))
+        padding = stroke_width + 1
+        bounds = probe_draw.textbbox(
+            (0, 0), text, font=font, stroke_width=stroke_width
         )
         text_width = bounds[2] - bounds[0]
-        if text_width + (padding_x * 2) <= max_width:
+        if text_width + (padding * 2) <= max_width:
             break
-        if lines == (single_line,):
-            lines = (f"原创：{creator_name}", x_handle)
-            font_size = base_font_size
-            continue
         if font_size <= minimum_font_size:
-            text_width_limit = max(1, max_width - (padding_x * 2))
-            lines = tuple(
-                _ellipsize_text(probe_draw, line, font, text_width_limit)
-                for line in lines
-            )
-            text = "\n".join(lines)
-            bounds = probe_draw.multiline_textbbox(
-                (0, 0),
+            text = _ellipsize_text(
+                probe_draw,
                 text,
-                font=font,
-                spacing=spacing,
+                font,
+                max(1, max_width - (padding * 2)),
+                stroke_width=stroke_width,
+            )
+            bounds = probe_draw.textbbox(
+                (0, 0), text, font=font, stroke_width=stroke_width
             )
             text_width = bounds[2] - bounds[0]
             break
         font_size -= 1
 
-    padding_y = max(3, round(font_size * 0.4))
-    marker_width = text_width + (padding_x * 2)
-    marker_height = (bounds[3] - bounds[1]) + (padding_y * 2)
-    radius = max(6, round(marker_height * 0.22))
+    marker_width = text_width + (padding * 2)
+    marker_height = (bounds[3] - bounds[1]) + (padding * 2)
 
     image = Image.new("RGBA", (marker_width, marker_height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
-    draw.rounded_rectangle(
-        (0, 0, marker_width - 1, marker_height - 1),
-        radius=radius,
-        fill=(10, 15, 24, 218),
-        outline=(255, 255, 255, 70),
-        width=1,
-    )
-    draw.multiline_text(
-        (padding_x - bounds[0], padding_y - bounds[1]),
+    draw.text(
+        (padding - bounds[0], padding - bounds[1]),
         text,
         font=font,
-        spacing=spacing,
-        fill=(255, 255, 255, 255),
+        fill=(255, 255, 255, 220),
+        stroke_width=stroke_width,
+        stroke_fill=(0, 0, 0, 220),
     )
     image.save(output)
 
@@ -167,9 +149,13 @@ def _ellipsize_text(
     text: str,
     font: ImageFont.FreeTypeFont,
     max_width: int,
+    *,
+    stroke_width: int = 0,
 ) -> str:
     def rendered_width(value: str) -> int:
-        bounds = draw.textbbox((0, 0), value, font=font)
+        bounds = draw.textbbox(
+            (0, 0), value, font=font, stroke_width=stroke_width
+        )
         return bounds[2] - bounds[0]
 
     if rendered_width(text) <= max_width:
@@ -206,12 +192,9 @@ def _burn_marker(
     output: Path,
     margin: int,
 ) -> None:
-    phase = f"mod(floor(t/{MARKER_INTERVAL_SECONDS}),3)"
-    x_position = (
-        f"if(eq({phase},0),{margin},"
-        f"if(eq({phase},1),W-w-{margin},(W-w)/2))"
-    )
-    y_position = f"if(eq({phase},2),H*0.18,{margin})"
+    phase = f"mod(floor(t/{MARKER_INTERVAL_SECONDS}),2)"
+    x_position = f"if(eq({phase},0),{margin},W-w-{margin})"
+    y_position = str(margin)
     command = [
         ffmpeg,
         "-hide_banner",

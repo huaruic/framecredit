@@ -17,7 +17,6 @@ def build_parser() -> argparse.ArgumentParser:
         "process", help="create an MP4 with a visible Creator Marker"
     )
     process.add_argument("input", type=Path, help="source video")
-    process.add_argument("--creator-name", required=True, help="X display name")
     process.add_argument("--x-handle", required=True, help="X handle, such as @xiaoming")
     process.add_argument("--output", required=True, type=Path, help="output MP4 path")
 
@@ -40,7 +39,6 @@ def main(argv: list[str] | None = None) -> int:
                 ProcessRequest(
                     source=args.input,
                     output=args.output,
-                    creator_name=args.creator_name,
                     x_handle=args.x_handle,
                 )
             )

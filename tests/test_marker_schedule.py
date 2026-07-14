@@ -15,7 +15,7 @@ FFMPEG = shutil.which("ffmpeg")
 
 @unittest.skipUnless(FFMPEG, "ffmpeg is required")
 class CreatorMarkerScheduleTest(unittest.TestCase):
-    def test_long_creator_identity_respects_small_video_width(self) -> None:
+    def test_x_handle_marker_respects_small_video_width(self) -> None:
         with tempfile.TemporaryDirectory(prefix="framecredit-marker-test-") as temp_dir:
             workdir = Path(temp_dir)
             source = workdir / "small-source.mp4"
@@ -30,7 +30,7 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
                     "-f",
                     "lavfi",
                     "-i",
-                    "color=c=gray:s=240x160:r=24",
+                    "color=c=black:s=240x160:r=24",
                     "-t",
                     "2",
                     "-c:v",
@@ -53,8 +53,6 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "Shen Sean Chen",
                     "--x-handle",
                     "@ShenSeanChen",
                     "--output",
@@ -67,20 +65,14 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
 
-            frame = self._extract_frame(output, 1, workdir)
-            with Image.open(frame).convert("L") as image:
-                dark_panel = image.point(lambda value: 255 if value < 80 else 0).getbbox()
-                bright_text = image.point(lambda value: 255 if value > 200 else 0).getbbox()
-            self.assertIsNotNone(dark_panel)
-            self.assertIsNotNone(bright_text)
-            assert dark_panel is not None and bright_text is not None
-            self.assertLessEqual(dark_panel[2] - dark_panel[0], 240 * 0.35)
-            self.assertGreater(bright_text[0], dark_panel[0])
-            self.assertGreater(bright_text[1], dark_panel[1])
-            self.assertLess(bright_text[2], dark_panel[2])
-            self.assertLess(bright_text[3], dark_panel[3])
+            left, top, right, bottom = self._visible_content_box(output, 1, workdir)
+            self.assertLessEqual(right - left, 240 * 0.35)
+            self.assertGreaterEqual(left, 0)
+            self.assertGreaterEqual(top, 0)
+            self.assertLessEqual(right, 240)
+            self.assertLessEqual(bottom, 160)
 
-    def test_creator_marker_remains_readable_on_light_background(self) -> None:
+    def test_creator_marker_uses_outline_instead_of_an_opaque_panel(self) -> None:
         with tempfile.TemporaryDirectory(prefix="framecredit-marker-test-") as temp_dir:
             workdir = Path(temp_dir)
             source = workdir / "light-source.mp4"
@@ -118,8 +110,6 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "小明",
                     "--x-handle",
                     "@xiaoming",
                     "--output",
@@ -135,11 +125,18 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
             frame = self._extract_frame(output, 1, workdir)
             with Image.open(frame).convert("L") as image:
                 marker_region = image.crop((0, 0, 250, 100))
-                darkest, brightest = marker_region.getextrema()
-            self.assertLess(darkest, 64, "Creator Marker needs a dark contrast panel")
-            self.assertGreater(brightest, 220, "Creator Identity needs bright readable text")
+                dark_pixels = sum(
+                    value < 64 for value in marker_region.get_flattened_data()
+                )
+                dark_ratio = dark_pixels / (marker_region.width * marker_region.height)
+            self.assertGreater(dark_pixels, 20, "the light marker needs a dark outline")
+            self.assertLess(
+                dark_ratio,
+                0.02,
+                "the Creator Marker must not contain a large opaque panel",
+            )
 
-    def test_long_creator_identity_stays_compact(self) -> None:
+    def test_x_handle_marker_stays_compact(self) -> None:
         with tempfile.TemporaryDirectory(prefix="framecredit-marker-test-") as temp_dir:
             workdir = Path(temp_dir)
             source = workdir / "source.mp4"
@@ -177,8 +174,6 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "Shen Sean Chen",
                     "--x-handle",
                     "@ShenSeanChen",
                     "--output",
@@ -194,12 +189,16 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
             left, top, right, bottom = self._visible_content_box(output, 1, workdir)
             self.assertLessEqual(
                 right - left,
-                1280 * 0.35,
-                "a long Creator Identity should not become a full-width banner",
+                1280 * 0.20,
+                "the X handle marker should remain narrow",
             )
-            self.assertLessEqual(bottom - top, 720 * 0.12)
+            self.assertLessEqual(
+                bottom - top,
+                720 * 0.06,
+                "the X handle marker should remain one compact line",
+            )
 
-    def test_creator_marker_uses_three_safe_positions_over_time(self) -> None:
+    def test_creator_marker_alternates_between_top_corners_every_thirty_seconds(self) -> None:
         with tempfile.TemporaryDirectory(prefix="framecredit-schedule-test-") as temp_dir:
             workdir = Path(temp_dir)
             source = workdir / "source.mp4"
@@ -220,7 +219,7 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
                     "-i",
                     "sine=frequency=440:sample_rate=48000",
                     "-t",
-                    "38",
+                    "64",
                     "-shortest",
                     "-c:v",
                     "libx264",
@@ -244,8 +243,6 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "小明",
                     "--x-handle",
                     "@xiaoming",
                     "--output",
@@ -258,7 +255,7 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
 
-            timestamps = (3, 11, 13, 23, 25, 35)
+            timestamps = (3, 29, 31, 59, 61)
             boxes = [
                 self._visible_content_box(output, timestamp, workdir)
                 for timestamp in timestamps
@@ -266,13 +263,10 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
             centers = [((left + right) / 2, (top + bottom) / 2) for left, top, right, bottom in boxes]
 
             self.assertLess(centers[0][0], 480 * 0.4, "first position should be top-left")
-            self.assertLess(centers[1][0], 480 * 0.4, "position should remain top-left before 12s")
-            self.assertGreater(centers[2][0], 480 * 0.6, "position should switch to top-right after 12s")
-            self.assertGreater(centers[3][0], 480 * 0.6, "position should remain top-right before 24s")
-            self.assertGreater(centers[4][0], 480 * 0.4, "position should switch to centered after 24s")
-            self.assertLess(centers[4][0], 480 * 0.6, "position should switch to centered after 24s")
-            self.assertGreater(centers[5][0], 480 * 0.4, "position should remain centered before 36s")
-            self.assertLess(centers[5][0], 480 * 0.6, "position should remain centered before 36s")
+            self.assertLess(centers[1][0], 480 * 0.4, "position should remain top-left before 30s")
+            self.assertGreater(centers[2][0], 480 * 0.6, "position should switch to top-right after 30s")
+            self.assertGreater(centers[3][0], 480 * 0.6, "position should remain top-right before 60s")
+            self.assertLess(centers[4][0], 480 * 0.4, "position should return to top-left after 60s")
             self.assertTrue(
                 all(bottom < 270 * 0.75 for _, _, _, bottom in boxes),
                 "the Creator Marker should stay above the subtitle region",
@@ -286,8 +280,6 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
                     "framecredit",
                     "process",
                     str(source),
-                    "--creator-name",
-                    "小明",
                     "--x-handle",
                     "@xiaoming",
                     "--output",
@@ -301,7 +293,7 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
             self.assertEqual(repeated_result.returncode, 0, repeated_result.stderr)
             repeated_boxes = [
                 self._visible_content_box(repeated_output, timestamp, workdir)
-                for timestamp in (3, 15, 27)
+                for timestamp in (3, 31, 61)
             ]
             self.assertEqual(repeated_boxes, [boxes[0], boxes[2], boxes[4]])
 

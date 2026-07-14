@@ -1,22 +1,32 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FrameCredit · 让创作者身份跟着每一帧</title>
+  <title>FrameCredit · Local video attribution</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ff583d'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial' font-size='18' font-weight='700'%3EF%3C/text%3E%3C/svg%3E">
   <style>
+    /* 半径系统：交互元素 10px，容器 16px */
     :root {
       color-scheme: dark;
-      --ink: #0b0b0a;
-      --panel: #151513;
-      --panel-raised: #1d1d1a;
-      --paper: #f4eedf;
-      --muted: #a8a398;
-      --line: #37362f;
-      --signal: #ff583d;
-      --signal-soft: #ff927f;
-      --lime: #c9f06b;
-      --radius: 22px;
+      --ink: #0b0b0a;          /* 页面底色 */
+      --panel: #141412;        /* 工作区底色 */
+      --field: #0e0e0d;        /* 输入框 / 拖放区底色 */
+      --paper: #f2ede0;        /* 主文字 */
+      --muted: #a19c90;        /* 次要文字 */
+      --label: #d5cfc2;        /* 表单 label */
+      --faint: #767268;        /* 最弱文字（隐私说明） */
+      --placeholder: #6e6a60;
+      --line: #33322c;
+      --accent: #ff583d;
+      --on-accent: #140503;    /* accent 按钮上的文字 */
+      --accent-ring: rgb(255 88 61 / .14);
+      --accent-tint: rgb(255 88 61 / .06);
+      --btn-bg: #f2ede0;       /* 默认按钮 */
+      --btn-bg-hover: #ffffff;
+      --btn-text: #0b0b0a;
+      --ghost-hover: rgb(255 255 255 / .05);
+      --dash: #55524a;         /* 拖放区虚线 */
     }
 
     * { box-sizing: border-box; }
@@ -25,20 +35,8 @@
       margin: 0;
       min-height: 100vh;
       color: var(--paper);
-      background:
-        linear-gradient(90deg, transparent 49px, rgba(255,255,255,.035) 50px, transparent 51px) 0 0 / 100px 100%,
-        radial-gradient(circle at 78% 12%, rgba(255,88,61,.14), transparent 28rem),
-        var(--ink);
-      font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: .18;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+      background: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     button, input { font: inherit; }
@@ -46,135 +44,94 @@
     .shell {
       width: min(1180px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 34px 0 56px;
-      position: relative;
+      padding: 26px 0 56px;
     }
 
     header {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       justify-content: space-between;
-      padding-bottom: 28px;
+      gap: 16px;
+      padding-bottom: 18px;
       border-bottom: 1px solid var(--line);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 13px;
-      font-size: 14px;
+      gap: 11px;
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: uppercase;
+      letter-spacing: .02em;
     }
 
     .brand-mark {
       display: grid;
       place-items: center;
-      width: 35px;
-      height: 35px;
-      color: var(--ink);
-      background: var(--signal);
-      border-radius: 50%;
-      font-family: Georgia, serif;
-      font-size: 20px;
-      transform: rotate(-8deg);
+      width: 30px;
+      height: 30px;
+      color: var(--on-accent);
+      background: var(--accent);
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 800;
     }
 
-    .local-only {
-      color: var(--lime);
-      font-size: 12px;
-      letter-spacing: .08em;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr);
-      gap: 52px;
-      align-items: end;
-      padding: 58px 0 42px;
-    }
+    .local-only { color: var(--muted); font-size: 12px; }
 
     h1 {
-      margin: 0;
-      max-width: 620px;
-      font-family: "Iowan Old Style", Baskerville, "Songti SC", serif;
-      font-size: clamp(44px, 7vw, 84px);
+      margin: 22px 0 28px;
+      font-size: 19px;
       font-weight: 500;
-      line-height: .98;
-      letter-spacing: -.045em;
-    }
-
-    h1 em {
-      color: var(--signal);
-      font-style: italic;
-    }
-
-    .hero-copy {
-      max-width: 540px;
-      margin: 0 0 5px;
       color: var(--muted);
-      font-size: 16px;
-      line-height: 1.8;
+      letter-spacing: .01em;
     }
+    h1 strong { color: var(--paper); font-weight: 650; }
 
     .workspace {
       display: grid;
-      grid-template-columns: minmax(280px, .78fr) minmax(420px, 1.22fr);
+      grid-template-columns: minmax(280px, .7fr) minmax(420px, 1.3fr);
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 16px;
       overflow: hidden;
-      background: rgba(21,21,19,.94);
-      box-shadow: 0 30px 80px rgba(0,0,0,.34);
+      background: var(--panel);
     }
 
-    .panel { padding: clamp(25px, 4vw, 44px); }
+    .panel { padding: clamp(24px, 3.5vw, 38px); }
     .identity-panel { border-right: 1px solid var(--line); }
 
-    .step {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 24px;
-      color: var(--signal-soft);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-    }
+    h2 { margin: 0 0 8px; font-size: 20px; letter-spacing: -.01em; }
+    .hint { margin: 0 0 22px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 
-    .step::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-    h2 { margin: 0 0 8px; font-size: 24px; letter-spacing: -.025em; }
-    .hint { margin: 0 0 25px; color: var(--muted); font-size: 13px; line-height: 1.6; }
-
-    .field { display: grid; gap: 8px; margin-bottom: 18px; }
-    .field label { color: #d7d1c4; font-size: 12px; font-weight: 650; }
+    .field { display: grid; gap: 7px; margin-bottom: 16px; }
+    .field label { color: var(--label); font-size: 12px; font-weight: 600; }
     .field input {
       width: 100%;
-      padding: 13px 14px;
+      padding: 12px 13px;
       color: var(--paper);
-      background: #0e0e0d;
+      background: var(--field);
       border: 1px solid var(--line);
       border-radius: 10px;
       outline: none;
       transition: border-color .18s, box-shadow .18s;
     }
-    .field input:focus { border-color: var(--signal); box-shadow: 0 0 0 3px rgba(255,88,61,.12); }
+    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+    .field input::placeholder { color: var(--placeholder); }
 
-    .identity-preview-wrap { margin: 27px 0 22px; }
-    .eyebrow { margin-bottom: 9px; color: var(--muted); font-size: 10px; letter-spacing: .13em; text-transform: uppercase; }
+    .identity-preview-wrap { margin: 24px 0 20px; }
+    .preview-label { margin-bottom: 8px; color: var(--muted); font-size: 12px; }
     #identity-preview {
       display: inline-flex;
-      min-height: 40px;
+      min-height: 32px;
       align-items: center;
       max-width: 100%;
-      padding: 9px 13px;
+      padding: 4px 2px;
       overflow: hidden;
       color: white;
-      background: #0a0f18;
-      border: 1px solid rgba(255,255,255,.28);
-      border-radius: 9px;
+      background: transparent;
       font-size: 14px;
+      font-weight: 600;
+      text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -184,56 +141,79 @@
       min-height: 44px;
       align-items: center;
       justify-content: center;
-      gap: 8px;
       padding: 0 18px;
-      color: var(--ink);
-      background: var(--paper);
+      color: var(--btn-text);
+      background: var(--btn-bg);
       border: 0;
       border-radius: 10px;
       cursor: pointer;
-      font-weight: 750;
-      transition: transform .18s, background .18s;
+      font-weight: 700;
+      transition: transform .15s, background .15s;
     }
-    .button:hover { transform: translateY(-2px); background: white; }
+    .button:hover { background: var(--btn-bg-hover); }
+    .button:active { transform: translateY(1px); }
     .button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-    .button.signal { background: var(--signal); color: #130604; }
+    .button.accent { background: var(--accent); color: var(--on-accent); }
     .button.ghost { color: var(--paper); background: transparent; border: 1px solid var(--line); }
+    .button.ghost:hover { background: var(--ghost-hover); }
 
     #drop-zone {
       position: relative;
       display: grid;
-      min-height: 255px;
+      min-height: 260px;
       place-items: center;
-      padding: 34px;
+      padding: 20px;
       text-align: center;
-      background:
-        linear-gradient(135deg, rgba(255,88,61,.07), transparent 55%),
-        #10100f;
-      border: 1px dashed #57544c;
+      background: var(--field);
+      border: 1px dashed var(--dash);
       border-radius: 16px;
       cursor: pointer;
-      transition: border-color .2s, transform .2s, background .2s;
+      transition: border-color .2s, background .2s;
     }
-    #drop-zone:hover, #drop-zone.dragging {
-      border-color: var(--signal);
-      transform: translateY(-2px);
-      background: rgba(255,88,61,.08);
-    }
+    #drop-zone:hover, #drop-zone.dragging { border-color: var(--accent); background: var(--accent-tint); }
+    #drop-zone.has-preview { padding: 0; border-style: solid; border-color: var(--line); overflow: hidden; }
     #source-video { position: absolute; width: 1px; height: 1px; opacity: 0; }
-    .drop-icon { display: block; margin-bottom: 17px; color: var(--signal); font: 48px/1 Georgia, serif; }
-    .drop-title { display: block; font-size: 21px; font-weight: 700; }
+
+    .drop-title { display: block; font-size: 19px; font-weight: 700; }
     .drop-detail { display: block; margin-top: 8px; color: var(--muted); font-size: 12px; }
-    #selected-file { color: var(--lime); }
+    #selected-file { color: var(--paper); }
+
+    #preview-canvas { display: none; width: 100%; height: auto; }
+    #drop-zone.has-preview #preview-canvas { display: block; }
+    #drop-zone.has-preview .drop-prompt { display: none; }
+
+    .preview-controls {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .preview-controls.visible { display: flex; flex-wrap: wrap; }
+    .chip {
+      padding: 6px 12px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: color .15s, border-color .15s;
+    }
+    .chip:hover { color: var(--paper); }
+    .chip.active { color: var(--paper); border-color: var(--accent); }
 
     .action-row { display: flex; align-items: center; gap: 14px; margin-top: 20px; }
-    #progress { flex: 1; min-height: 44px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    #progress { flex: 1; min-height: 44px; display: flex; align-items: center; color: var(--muted); font-size: 12px; line-height: 1.45; }
     #progress.active::before {
       content: "";
       display: inline-block;
+      flex: none;
       width: 8px;
       height: 8px;
       margin-right: 8px;
-      background: var(--signal);
+      background: var(--accent);
       border-radius: 50%;
       animation: pulse 1s infinite alternate;
     }
@@ -242,28 +222,27 @@
     .result {
       display: none;
       margin-top: 22px;
-      padding: 17px;
-      background: rgba(201,240,107,.07);
-      border: 1px solid rgba(201,240,107,.28);
-      border-radius: 12px;
+      padding: 16px 17px;
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
     }
     .result.visible { display: block; }
-    .result-title { margin: 0 0 8px; color: var(--lime); font-size: 13px; font-weight: 750; }
-    #result-path { display: block; margin-bottom: 14px; color: #c9c4b9; font: 11px/1.55 ui-monospace, monospace; overflow-wrap: anywhere; }
+    .result-title { margin: 0 0 8px; font-size: 13px; font-weight: 700; }
+    #result-path { display: block; margin-bottom: 14px; color: var(--muted); font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
 
-    .privacy { display: flex; gap: 10px; margin-top: 20px; color: #747169; font-size: 11px; line-height: 1.5; }
-    .privacy strong { color: var(--lime); }
+    .privacy { margin: 20px 0 0; color: var(--faint); font-size: 11px; line-height: 1.6; }
 
     @media (max-width: 820px) {
-      .hero, .workspace { grid-template-columns: 1fr; }
-      .hero { gap: 25px; padding-top: 40px; }
+      .workspace { grid-template-columns: 1fr; }
       .identity-panel { border-right: 0; border-bottom: 1px solid var(--line); }
       .shell { width: min(100% - 24px, 680px); }
       .local-only { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
@@ -271,69 +250,65 @@
   <div class="shell">
     <header>
       <div class="brand"><span class="brand-mark">F</span> FrameCredit</div>
-      <div class="local-only">● 仅在这台电脑上运行</div>
+      <div class="local-only">Local only · 127.0.0.1</div>
     </header>
 
-    <section class="hero">
-      <h1>让创作者身份，<br>跟着每一<em>帧</em>。</h1>
-      <p class="hero-copy">在上传 X 之前，把你的创作者身份直接写进视频画面。别人下载再上传，观众仍然知道视频来自谁。</p>
-    </section>
+    <h1><strong>Keep your X identity in the video.</strong> If it gets reposted, viewers can still find you.</h1>
 
     <main class="workspace">
       <section class="panel identity-panel" aria-labelledby="identity-heading">
-        <div class="step">01 · Creator Identity</div>
-        <h2 id="identity-heading">确认创作者身份</h2>
-        <p class="hint">只需保存一次，下次打开会自动恢复。创作者标识会成为视频画面的一部分。</p>
+        <h2 id="identity-heading">Creator identity</h2>
+        <p class="hint">Save your X handle once. The marker becomes part of every exported frame.</p>
 
         <form id="identity-form">
           <div class="field">
-            <label for="creator-name">X 显示名称</label>
-            <input id="creator-name" name="creator_name" autocomplete="name" placeholder="例如：小明" required>
-          </div>
-          <div class="field">
-            <label for="x-handle">X 用户名</label>
-            <input id="x-handle" name="x_handle" placeholder="例如：@xiaoming" required>
+            <label for="x-handle">X handle</label>
+            <input id="x-handle" name="x_handle" placeholder="For example: @xiaoming" required>
           </div>
           <div class="identity-preview-wrap">
-            <div class="eyebrow">创作者标识预览</div>
-            <output id="identity-preview">原创：你的名称&nbsp;&nbsp;@handle</output>
+            <div class="preview-label">Creator Marker</div>
+            <output id="identity-preview">X · @handle</output>
           </div>
-          <button class="button ghost" type="submit">保存创作者身份</button>
+          <button class="button ghost" type="submit">Save X handle</button>
         </form>
       </section>
 
       <section class="panel" aria-labelledby="video-heading">
-        <div class="step">02 · Source Video</div>
-        <h2 id="video-heading">拖入要发布的视频</h2>
-        <p class="hint">源视频和署名成品都留在本机。处理时间取决于视频长度。</p>
+        <h2 id="video-heading">Source Video</h2>
+        <p class="hint">Drop in a video to preview the real marker size and positions. Your files stay on this computer.</p>
 
         <label id="drop-zone" for="source-video">
           <input id="source-video" type="file" accept="video/*">
-          <span>
-            <span class="drop-icon">↘</span>
-            <span class="drop-title">把视频拖到这里</span>
-            <span class="drop-detail">或点击选择文件 · <span id="selected-file">尚未选择</span></span>
+          <span class="drop-prompt">
+            <span class="drop-title">Drop a video here</span>
+            <span class="drop-detail">or click to choose · <span id="selected-file">No file selected</span></span>
           </span>
+          <canvas id="preview-canvas" aria-label="Creator Marker preview"></canvas>
         </label>
 
+        <div id="preview-controls" class="preview-controls" role="group" aria-label="Marker position preview">
+          <span>Switches every 30 seconds:</span>
+          <button type="button" class="chip active" data-position="0">Top left</button>
+          <button type="button" class="chip" data-position="1">Top right</button>
+        </div>
+
         <div class="action-row">
-          <button id="process-video" class="button signal" type="button" disabled>生成署名成品</button>
-          <div id="progress" role="status" aria-live="polite">等待选择视频</div>
+          <button id="process-video" class="button accent" type="button" disabled>Create Attributed Export</button>
+          <div id="progress" role="status" aria-live="polite">Waiting for a Source Video</div>
         </div>
 
         <section id="result" class="result" aria-labelledby="result-heading">
-          <p id="result-heading" class="result-title">✓ Attributed Export 已生成</p>
+          <p id="result-heading" class="result-title">Attributed Export created</p>
           <output id="result-path"></output>
-          <button id="open-output" class="button" type="button">打开署名成品</button>
+          <button id="open-output" class="button" type="button">Open Attributed Export</button>
         </section>
 
-        <p class="privacy"><strong>本地处理</strong><span>FrameCredit 只连接当前电脑上的 127.0.0.1，不会把视频发送到远程服务器。</span></p>
+        <p class="privacy">Local processing: FrameCredit listens only on 127.0.0.1 and never sends your video to a remote server.</p>
       </section>
     </main>
   </div>
 
   <script>
-    const creatorName = document.querySelector('#creator-name');
     const xHandle = document.querySelector('#x-handle');
     const preview = document.querySelector('#identity-preview');
     const identityForm = document.querySelector('#identity-form');
@@ -345,42 +320,151 @@
     const result = document.querySelector('#result');
     const resultPath = document.querySelector('#result-path');
     const openButton = document.querySelector('#open-output');
+    const canvas = document.querySelector('#preview-canvas');
+    const previewControls = document.querySelector('#preview-controls');
+    const positionChips = [...previewControls.querySelectorAll('.chip')];
     let sourceVideo = null;
     let openUrl = null;
     let progressTimer = null;
+    let previewFrame = null;
+    let markerPosition = 0;
+
+    const MARKER_FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+    function markerText() {
+      const value = xHandle.value.trim() || '@handle';
+      const handle = value.startsWith('@') ? value : `@${value}`;
+      return `X · ${handle}`;
+    }
 
     function updatePreview() {
-      const name = creatorName.value.trim() || '你的名称';
-      const handle = xHandle.value.trim() || '@handle';
-      preview.textContent = `原创：${name}  ${handle}`;
+      preview.textContent = markerText();
+      if (previewFrame) drawPreview();
     }
 
     async function saveIdentity() {
       const response = await fetch('/api/identity', {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({creator_name: creatorName.value, x_handle: xHandle.value})
+        body: JSON.stringify({x_handle: xHandle.value})
       });
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || '无法保存创作者身份');
+      if (!response.ok) throw new Error(payload.error || 'Could not save the X handle');
       return payload;
+    }
+
+    // Mirrors the exported marker closely enough for an honest visual preview.
+    function layoutMarker(ctx, w, h) {
+      const margin = Math.max(10, Math.round(h * 0.03));
+      const widthRatio = w < 480 ? 0.35 : 0.20;
+      const maxWidth = Math.max(1, Math.min(w - margin * 2, w * widthRatio));
+      const minFontSize = Math.max(6, Math.round(h * 0.018));
+      let fontSize = Math.max(12, Math.round(h * 0.034));
+      let text = markerText();
+      let strokeWidth, padding, textWidth;
+
+      while (true) {
+        ctx.font = `${fontSize}px ${MARKER_FONT}`;
+        strokeWidth = Math.max(1, Math.round(fontSize * 0.09));
+        padding = strokeWidth + 1;
+        textWidth = ctx.measureText(text).width + strokeWidth * 2;
+        if (textWidth + padding * 2 <= maxWidth) break;
+        if (fontSize <= minFontSize) {
+          const limit = Math.max(1, maxWidth - padding * 2 - strokeWidth * 2);
+          let candidate = text;
+          while (candidate && ctx.measureText(candidate + '…').width > limit) candidate = candidate.slice(0, -1);
+          text = candidate + '…';
+          textWidth = ctx.measureText(text).width + strokeWidth * 2;
+          break;
+        }
+        fontSize -= 1;
+      }
+
+      return {
+        margin, fontSize, strokeWidth, padding, text,
+        width: Math.round(textWidth + padding * 2),
+        height: Math.round(fontSize + strokeWidth * 2 + padding * 2),
+      };
+    }
+
+    function drawPreview() {
+      const w = previewFrame.width;
+      const h = previewFrame.height;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(previewFrame, 0, 0, w, h);
+
+      const marker = layoutMarker(ctx, w, h);
+      const positions = [
+        [marker.margin, marker.margin],
+        [w - marker.width - marker.margin, marker.margin],
+      ];
+      const [x, y] = positions[markerPosition];
+
+      ctx.font = `${marker.fontSize}px ${MARKER_FONT}`;
+      ctx.fillStyle = 'rgb(255 255 255 / .86)';
+      ctx.strokeStyle = 'rgb(0 0 0 / .86)';
+      ctx.lineWidth = marker.strokeWidth * 2;
+      ctx.lineJoin = 'round';
+      ctx.textBaseline = 'top';
+      const textX = x + marker.padding + marker.strokeWidth;
+      const textY = y + marker.padding + marker.strokeWidth;
+      ctx.strokeText(marker.text, textX, textY);
+      ctx.fillText(marker.text, textX, textY);
+    }
+
+    function loadPreviewFrame(file) {
+      previewFrame = null;
+      dropZone.classList.remove('has-preview');
+      previewControls.classList.remove('visible');
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+      video.src = url;
+      video.addEventListener('loadeddata', () => { video.currentTime = Math.min(0.1, video.duration || 0); });
+      video.addEventListener('seeked', () => {
+        const frame = document.createElement('canvas');
+        frame.width = video.videoWidth;
+        frame.height = video.videoHeight;
+        frame.getContext('2d').drawImage(video, 0, 0);
+        previewFrame = frame;
+        dropZone.classList.add('has-preview');
+        previewControls.classList.add('visible');
+        drawPreview();
+        URL.revokeObjectURL(url);
+      });
+      // A browser preview failure does not prevent the local backend from processing.
+      video.addEventListener('error', () => URL.revokeObjectURL(url));
     }
 
     function chooseFile(file) {
       sourceVideo = file || null;
-      selectedFile.textContent = sourceVideo ? sourceVideo.name : '尚未选择';
+      selectedFile.textContent = sourceVideo ? sourceVideo.name : 'No file selected';
       processButton.disabled = !sourceVideo;
-      progress.textContent = sourceVideo ? '已就绪，可以开始本地处理' : '等待选择视频';
+      progress.textContent = sourceVideo ? 'Ready to process locally' : 'Waiting for a Source Video';
       result.classList.remove('visible');
+      loadPreviewFrame(sourceVideo);
     }
 
-    creatorName.addEventListener('input', updatePreview);
+    positionChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        markerPosition = Number(chip.dataset.position);
+        positionChips.forEach((other) => other.classList.toggle('active', other === chip));
+        if (previewFrame) drawPreview();
+      });
+    });
+
     xHandle.addEventListener('input', updatePreview);
     identityForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       try {
         await saveIdentity();
-        progress.textContent = '创作者身份已保存在这台电脑上';
+        progress.textContent = 'X handle saved on this computer';
       } catch (error) {
         progress.textContent = error.message;
       }
@@ -409,7 +493,7 @@
       const startedAt = Date.now();
       const updateElapsedTime = () => {
         const seconds = Math.floor((Date.now() - startedAt) / 1000);
-        progress.textContent = `正在本地生成署名成品 · 已用时 ${seconds} 秒`;
+        progress.textContent = `Creating Attributed Export locally · ${seconds}s elapsed`;
       };
       updateElapsedTime();
       progressTimer = window.setInterval(updateElapsedTime, 250);
@@ -424,13 +508,13 @@
           body: sourceVideo
         });
         const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error || '处理失败');
+        if (!response.ok) throw new Error(payload.error || 'Processing failed');
         resultPath.textContent = payload.output;
         openUrl = payload.open_url;
         result.classList.add('visible');
-        progress.textContent = '处理完成，创作者标识已经写进视频';
+        progress.textContent = 'Done · the Creator Marker is part of the video';
       } catch (error) {
-        progress.textContent = `处理失败：${error.message}`;
+        progress.textContent = `Processing failed: ${error.message}`;
       } finally {
         window.clearInterval(progressTimer);
         progressTimer = null;
@@ -444,18 +528,17 @@
       const response = await fetch(openUrl, {method: 'POST'});
       if (!response.ok) {
         const payload = await response.json();
-        progress.textContent = payload.error || '无法打开署名成品';
+        progress.textContent = payload.error || 'Could not open the Attributed Export';
       }
     });
 
     fetch('/api/identity')
       .then((response) => response.json())
       .then((identity) => {
-        creatorName.value = identity.creator_name || '';
         xHandle.value = identity.x_handle || '';
         updatePreview();
       })
-      .catch(() => { progress.textContent = '无法读取已保存的创作者身份'; });
+      .catch(() => { progress.textContent = 'Could not load the saved X handle'; });
   </script>
 </body>
 </html>
