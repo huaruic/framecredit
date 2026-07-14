@@ -140,6 +140,12 @@ def _render_creator_marker(
     marker_width = text_width + (padding * 2)
     marker_height = (bounds[3] - bounds[1]) + (padding * 2)
 
+    # The bitmap is tight to the visible ink: `padding` (stroke_width + 1, a
+    # few pixels per side) only keeps anti-aliased stroke edges from being
+    # clipped. Because this transparent border is small and symmetric, the
+    # overlay positions computed from the full bitmap size in _burn_marker
+    # keep the visible Creator Marker equally close to the margin in both top
+    # corners; bitmap size and visible-ink size are effectively the same.
     image = Image.new("RGBA", (marker_width, marker_height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
     draw.text(
