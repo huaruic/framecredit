@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -9,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 MARKER_INTERVAL_SECONDS = 30
+X_HANDLE_PATTERN = re.compile(r"@?([A-Za-z0-9_]{1,15})\Z")
 
 
 @dataclass(frozen=True)
@@ -23,6 +25,7 @@ class ProcessingError(RuntimeError):
 
 
 def create_attributed_export(request: ProcessRequest) -> Path:
+    x_handle = normalize_x_handle(request.x_handle)
     ffmpeg = _required_command("ffmpeg")
     ffprobe = _required_command("ffprobe")
 
@@ -37,7 +40,7 @@ def create_attributed_export(request: ProcessRequest) -> Path:
         margin = max(10, round(height * 0.03))
         _render_creator_marker(
             marker_path,
-            x_handle=request.x_handle,
+            x_handle=x_handle,
             video_width=width,
             video_height=height,
             margin=margin,
@@ -51,6 +54,15 @@ def create_attributed_export(request: ProcessRequest) -> Path:
         )
 
     return request.output.resolve()
+
+
+def normalize_x_handle(value: str) -> str:
+    match = X_HANDLE_PATTERN.fullmatch(value.strip())
+    if match is None:
+        raise ProcessingError(
+            "enter a valid X handle using 1–15 letters, numbers, or underscores"
+        )
+    return f"@{match.group(1)}"
 
 
 def _required_command(name: str) -> str:
@@ -89,10 +101,7 @@ def _render_creator_marker(
     video_height: int,
     margin: int,
 ) -> None:
-    handle = x_handle.strip()
-    if not handle.startswith("@"):
-        handle = f"@{handle}"
-    text = f"X · {handle}"
+    text = f"X · {x_handle}"
     base_font_size = max(12, round(video_height * 0.034))
     minimum_font_size = max(6, round(video_height * 0.018))
     font_size = base_font_size

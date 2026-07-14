@@ -66,7 +66,8 @@ class CreatorMarkerScheduleTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
 
             left, top, right, bottom = self._visible_content_box(output, 1, workdir)
-            self.assertLessEqual(right - left, 240 * 0.35)
+            self.assertLessEqual(right - left, 240 * 0.32)
+            self.assertLessEqual(bottom - top, 160 * 0.08)
             self.assertGreaterEqual(left, 0)
             self.assertGreaterEqual(top, 0)
             self.assertLessEqual(right, 240)

@@ -33,6 +33,35 @@ class ProcessCommandTest(unittest.TestCase):
         self.assertIn("--x-handle", result.stdout)
         self.assertNotIn("--creator-name", result.stdout)
 
+    def test_process_command_rejects_a_non_searchable_x_handle(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="framecredit-test-") as temp_dir:
+            workdir = Path(temp_dir)
+            output = workdir / "attributed.mp4"
+            env = os.environ.copy()
+            env["PYTHONPATH"] = str(ROOT / "src")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "framecredit",
+                    "process",
+                    str(workdir / "missing.mp4"),
+                    "--x-handle",
+                    "not a handle",
+                    "--output",
+                    str(output),
+                ],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("valid X handle", result.stderr)
+            self.assertFalse(output.exists())
+
     def test_creator_can_generate_a_playable_attributed_export(self) -> None:
         with tempfile.TemporaryDirectory(prefix="framecredit-test-") as temp_dir:
             workdir = Path(temp_dir)

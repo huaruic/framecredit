@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -177,6 +178,26 @@ class LocalAppTest(unittest.TestCase):
             try:
                 retained = self._json_request(f"{url}/api/identity")
                 self.assertEqual(retained, {"x_handle": "@xiaoming"})
+            finally:
+                self._stop_app(app)
+
+    def test_local_interface_rejects_a_non_searchable_x_handle(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="framecredit-app-test-") as temp_dir:
+            env = os.environ.copy()
+            env["PYTHONPATH"] = str(ROOT / "src")
+            env["FRAMECREDIT_HOME"] = str(Path(temp_dir) / "app-data")
+
+            app, url = self._start_app(env)
+            try:
+                with self.assertRaises(HTTPError) as captured:
+                    self._json_request(
+                        f"{url}/api/identity",
+                        method="PUT",
+                        body={"x_handle": "not a handle"},
+                    )
+                payload = json.loads(captured.exception.read().decode("utf-8"))
+                captured.exception.close()
+                self.assertIn("valid X handle", payload["error"])
             finally:
                 self._stop_app(app)
 

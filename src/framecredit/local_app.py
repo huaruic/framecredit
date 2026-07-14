@@ -14,7 +14,12 @@ from typing import BinaryIO
 from urllib.parse import unquote
 import webbrowser
 
-from .processing import ProcessRequest, ProcessingError, create_attributed_export
+from .processing import (
+    ProcessRequest,
+    ProcessingError,
+    create_attributed_export,
+    normalize_x_handle,
+)
 
 
 @dataclass(frozen=True)
@@ -112,10 +117,22 @@ def _handler_for(
                 length = int(self.headers.get("Content-Length", "0"))
                 payload = json.loads(self.rfile.read(length).decode("utf-8"))
                 identity = CreatorIdentity(
-                    x_handle=str(payload["x_handle"]).strip(),
+                    x_handle=normalize_x_handle(str(payload["x_handle"])),
                 )
                 saved = store.save(identity)
-            except (KeyError, TypeError, ValueError, json.JSONDecodeError, OSError):
+            except ProcessingError as error:
+                self._send_json(
+                    {"error": str(error)},
+                    status=HTTPStatus.BAD_REQUEST,
+                )
+                return
+            except (
+                KeyError,
+                TypeError,
+                ValueError,
+                json.JSONDecodeError,
+                OSError,
+            ):
                 self._send_json(
                     {"error": "x_handle is required"},
                     status=HTTPStatus.BAD_REQUEST,
