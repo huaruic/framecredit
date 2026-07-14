@@ -65,6 +65,10 @@ class LocalAppTest(unittest.TestCase):
                 if (marker !== 'X · @xiaoming') throw new Error(`wrong marker preview: ${{marker}}`);
                 await page.locator('#source-video').setInputFiles({json.dumps(str(source))});
                 await page.locator('#preview-canvas').waitFor({{state: 'visible', timeout: 10000}});
+                const positionNote = await page.locator('#preview-controls').textContent();
+                if (!positionNote.includes('Preview only · export alternates automatically every 30 seconds')) {{
+                    throw new Error(`missing preview-only note: ${{positionNote}}`);
+                }}
                 await page.locator('#process-video').click();
                 await page.waitForTimeout(500);
                 const progress = await page.locator('#progress').textContent();
@@ -129,6 +133,10 @@ class LocalAppTest(unittest.TestCase):
             self.assertIn('X · @handle', page)
             self.assertIn('id="drop-zone"', page)
             self.assertIn('id="source-video"', page)
+            self.assertIn(
+                'Preview only · export alternates automatically every 30 seconds',
+                page,
+            )
             self.assertIn('id="progress"', page)
             self.assertIn('id="result-path"', page)
             self.assertIn('id="open-output"', page)
