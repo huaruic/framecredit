@@ -1,6 +1,6 @@
 # Distribute the Creator Marker across time and space
 
-Status: ready-for-agent
+Status: completed
 
 User stories: 9–13, 31, 32, 34
 
@@ -12,13 +12,13 @@ The prototype validated this three-position shape on synthetic footage. Producti
 
 ## Acceptance criteria
 
-- [ ] The Creator Marker is visible throughout the Attributed Export outside explicitly documented transition boundaries.
-- [ ] The marker uses at least top-left, top-right, and centered positions during a representative video.
-- [ ] Position changes are discrete and do not animate continuously across the content.
-- [ ] The normal schedule avoids the lower subtitle region.
-- [ ] The Creator Identity remains readable over both light and dark sample backgrounds.
-- [ ] Extracted output frames confirm different positions at representative timestamps through the public processing seam.
-- [ ] The marker schedule is deterministic for the same duration and configuration.
+- [x] The Creator Marker is visible throughout the Attributed Export outside explicitly documented transition boundaries.
+- [x] The marker uses at least top-left, top-right, and centered positions during a representative video.
+- [x] Position changes are discrete and do not animate continuously across the content.
+- [x] The normal schedule avoids the lower subtitle region.
+- [x] The Creator Identity remains readable over both light and dark sample backgrounds.
+- [x] Extracted output frames confirm different positions at representative timestamps through the public processing seam.
+- [x] The marker schedule is deterministic for the same duration and configuration.
 
 ## Blocked by
 
@@ -41,3 +41,12 @@ for three alternating runs of each implementation. The fixed-position median
 was 1.92 seconds and the distributed-position median was 1.91 seconds, so no
 short-sample regression was measurable. This does not replace the full-length
 manual rerun.
+
+## Comments
+
+- Audit 2026-07-14: delivered in `1b26136` and validated on the real 61:42
+  Source Video described above. The three-position layout and 12-second
+  interval verified here were later superseded by Issue 04's two-corner
+  30-second schedule; the extracted-frame and determinism tests now assert
+  that schedule and pass as part of a fully green suite. User-story numbers
+  refer to the pre-rewrite PRD.

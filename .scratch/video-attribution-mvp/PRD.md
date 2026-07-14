@@ -8,8 +8,8 @@ Video creators publish original teaching videos as native uploads on X. Other
 people can download those videos and upload them again as new posts without
 retaining enough information for viewers to find the Creator.
 
-FrameCredit does not try to make copying impossible. It makes the Creator's X
-identity travel with an Ordinary Repost while keeping the teaching content
+FrameCredit does not try to make copying impossible. It makes the Creator
+Identity travel with an Ordinary Repost while keeping the teaching content
 useful. Determined Removal by cropping, covering, or reconstructing frames
 remains possible and is outside the MVP promise.
 
@@ -20,7 +20,7 @@ handle once and drops in a Source Video. FrameCredit produces an Attributed
 Export with a compact Creator Marker burned into the frames.
 
 The marker reads `X · @handle` so viewers know both the platform and the
-searchable account. It remains visible during normal playback, alternates
+searchable Creator Identity. It remains visible during normal playback, alternates
 discretely between the top corners every 30 seconds, and uses transparent
 outlined text instead of an opaque card. A normal native X video cannot carry a
 Creator-defined clickable region, so clickable hotspots, QR codes, and exact
@@ -30,7 +30,7 @@ All processing occurs on the Creator's computer. FrameCredit does not upload
 the Source Video, depend on an X API, change the native X publishing workflow,
 or require a platform to preserve metadata.
 
-The MVP succeeds when Ordinary Reposts retain a readable X identity without
+The MVP succeeds when Ordinary Reposts retain a readable Creator Identity without
 materially obstructing teaching content.
 
 ## User Stories
@@ -49,10 +49,10 @@ materially obstructing teaching content.
 12. As a Creator, I want original dimensions, duration, audio synchronization, and practical visual quality preserved.
 13. As a Creator, I want clear progress, success, and error feedback during local processing.
 14. As a Creator, I want existing output files handled safely, so that repeated processing does not destroy earlier exports.
-15. As a Creator, I want to preview the exact X identity before processing, so that a typo is not burned into a long export.
+15. As a Creator, I want to preview the exact Creator Identity before processing, so that a typo is not burned into a long export.
 16. As a viewer, I want to identify and search for the Creator within five seconds at normal social-video size.
 17. As a product team, we want one end-to-end processing interface shared by the command and local app.
-18. As a product team, we want the MVP to avoid accounts, cloud storage, platform integrations, Source Cards, and provenance infrastructure.
+18. As a product team, we want the MVP to avoid accounts, cloud storage, platform integrations, source cards, and provenance infrastructure.
 19. As a product team, we want to distinguish visible attribution from machine-verifiable provenance.
 20. As a product team, we want visual obstruction and Attribution Survival measured on representative teaching videos.
 
@@ -90,7 +90,7 @@ materially obstructing teaching content.
 
 - Preventing screen recording, cropping, blurring, inpainting, or Determined Removal.
 - Clickable regions inside native X video frames.
-- Source Cards, Source Titles, end cards, exact-source links, or QR codes.
+- Source cards, source titles, end cards, exact-source links, or QR codes.
 - X, YouTube, or other platform APIs.
 - Cloud processing, remote storage, accounts, teams, billing, or subscriptions.
 - Invisible watermarking, perceptual fingerprint databases, C2PA, or provenance repositories.

@@ -6,7 +6,7 @@ Issues and PRDs are stored as local Markdown under `.scratch/`; external PRs are
 
 ### Triage labels
 
-Use the default five-state vocabulary. See `docs/agents/triage-labels.md`.
+Use the default five-state vocabulary plus the project-local terminal `completed` state. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 

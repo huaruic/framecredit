@@ -28,3 +28,11 @@ This is a product validation exercise, not an expansion of the rendering feature
 - `03-distributed-creator-marker.md`
 - `04-compact-x-handle-marker.md`
 - `05-safe-errors-and-outputs.md`
+
+## Comments
+
+- Audit 2026-07-14: not started as an experiment. Only one real Source Video
+  (a 61:42 teaching video, plus a 65-second clip of it) has been validated end
+  to end; the ten-video Validation Set, the transformed renditions, and the
+  observer measurements have not begun. Remains blocked on Issues 04 and 05.
+  User-story numbers refer to the pre-rewrite PRD.

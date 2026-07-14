@@ -22,7 +22,7 @@ The publishable video produced by FrameCredit with its Source Signature attached
 _Avoid_: Protected video, secured video, watermarked copy
 
 **Source Signature**:
-The complete set of visible attribution elements distributed through an Attributed Export so that the Creator Identity travels with ordinary reposts.
+The complete set of visible attribution elements distributed through an Attributed Export so that the Creator Identity travels with Ordinary Reposts.
 _Avoid_: Watermark, logo, badge
 
 **Creator Marker**:
