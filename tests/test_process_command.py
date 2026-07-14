@@ -11,8 +11,18 @@ from PIL import Image, ImageChops
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from framecredit.processing import normalize_x_handle
+
 FFMPEG = shutil.which("ffmpeg")
 FFPROBE = shutil.which("ffprobe")
+
+
+class CreatorIdentityNormalizationTest(unittest.TestCase):
+    def test_a_bare_handle_is_stored_with_a_leading_at_sign(self) -> None:
+        self.assertEqual(normalize_x_handle("xiaoming"), "@xiaoming")
+        self.assertEqual(normalize_x_handle(" @xiaoming "), "@xiaoming")
 
 
 @unittest.skipUnless(FFMPEG and FFPROBE, "ffmpeg and ffprobe are required")
@@ -273,6 +283,54 @@ class ProcessCommandTest(unittest.TestCase):
                 self.assertIsNotNone(
                     ImageChops.difference(original_marker, handle_marker).getbbox(),
                     "changing the X handle should change the visible marker",
+                )
+
+            bare_handle_output = workdir / "bare-handle.mp4"
+            bare_handle_result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "framecredit",
+                    "process",
+                    str(source),
+                    "--x-handle",
+                    "xiaoming",
+                    "--output",
+                    str(bare_handle_output),
+                ],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(bare_handle_result.returncode, 0, bare_handle_result.stderr)
+
+            bare_handle_frame = workdir / "bare-handle.png"
+            subprocess.run(
+                [
+                    FFMPEG,
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-y",
+                    "-ss",
+                    "1",
+                    "-i",
+                    str(bare_handle_output),
+                    "-frames:v",
+                    "1",
+                    str(bare_handle_frame),
+                ],
+                check=True,
+            )
+            with (
+                Image.open(frame).convert("RGB") as with_at_sign,
+                Image.open(bare_handle_frame).convert("RGB") as without_at_sign,
+            ):
+                self.assertIsNone(
+                    ImageChops.difference(with_at_sign, without_at_sign).getbbox(),
+                    "a handle entered without @ should render the same "
+                    "X · @handle Creator Marker as the @-prefixed form",
                 )
 
 
