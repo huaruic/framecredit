@@ -59,3 +59,10 @@ _Avoid_: Theft prevention, copyright protection, watermark strength
 **Validation Set**:
 The representative Source Videos and transformed renditions used to measure Attribution Survival and viewing impact for a FrameCredit experiment.
 _Avoid_: Test fixtures, sample folder, benchmark corpus
+
+## Chinese UI vocabulary
+
+- Creator Identity: 创作者身份
+- Creator Marker: 创作者标识
+- Source Video: 源视频
+- Attributed Export: 署名成品

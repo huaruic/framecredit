@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FrameCredit · 让创作者身份跟着每一帧</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #0b0b0a;
+      --panel: #151513;
+      --panel-raised: #1d1d1a;
+      --paper: #f4eedf;
+      --muted: #a8a398;
+      --line: #37362f;
+      --signal: #ff583d;
+      --signal-soft: #ff927f;
+      --lime: #c9f06b;
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--paper);
+      background:
+        linear-gradient(90deg, transparent 49px, rgba(255,255,255,.035) 50px, transparent 51px) 0 0 / 100px 100%,
+        radial-gradient(circle at 78% 12%, rgba(255,88,61,.14), transparent 28rem),
+        var(--ink);
+      font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .18;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+    }
+
+    button, input { font: inherit; }
+
+    .shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 34px 0 56px;
+      position: relative;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      color: var(--ink);
+      background: var(--signal);
+      border-radius: 50%;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      transform: rotate(-8deg);
+    }
+
+    .local-only {
+      color: var(--lime);
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr);
+      gap: 52px;
+      align-items: end;
+      padding: 58px 0 42px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 620px;
+      font-family: "Iowan Old Style", Baskerville, "Songti SC", serif;
+      font-size: clamp(44px, 7vw, 84px);
+      font-weight: 500;
+      line-height: .98;
+      letter-spacing: -.045em;
+    }
+
+    h1 em {
+      color: var(--signal);
+      font-style: italic;
+    }
+
+    .hero-copy {
+      max-width: 540px;
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, .78fr) minmax(420px, 1.22fr);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(21,21,19,.94);
+      box-shadow: 0 30px 80px rgba(0,0,0,.34);
+    }
+
+    .panel { padding: clamp(25px, 4vw, 44px); }
+    .identity-panel { border-right: 1px solid var(--line); }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      color: var(--signal-soft);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .step::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    h2 { margin: 0 0 8px; font-size: 24px; letter-spacing: -.025em; }
+    .hint { margin: 0 0 25px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+    .field { display: grid; gap: 8px; margin-bottom: 18px; }
+    .field label { color: #d7d1c4; font-size: 12px; font-weight: 650; }
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      color: var(--paper);
+      background: #0e0e0d;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .field input:focus { border-color: var(--signal); box-shadow: 0 0 0 3px rgba(255,88,61,.12); }
+
+    .identity-preview-wrap { margin: 27px 0 22px; }
+    .eyebrow { margin-bottom: 9px; color: var(--muted); font-size: 10px; letter-spacing: .13em; text-transform: uppercase; }
+    #identity-preview {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      max-width: 100%;
+      padding: 9px 13px;
+      overflow: hidden;
+      color: white;
+      background: #0a0f18;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 9px;
+      font-size: 14px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 18px;
+      color: var(--ink);
+      background: var(--paper);
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 750;
+      transition: transform .18s, background .18s;
+    }
+    .button:hover { transform: translateY(-2px); background: white; }
+    .button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .button.signal { background: var(--signal); color: #130604; }
+    .button.ghost { color: var(--paper); background: transparent; border: 1px solid var(--line); }
+
+    #drop-zone {
+      position: relative;
+      display: grid;
+      min-height: 255px;
+      place-items: center;
+      padding: 34px;
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(255,88,61,.07), transparent 55%),
+        #10100f;
+      border: 1px dashed #57544c;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: border-color .2s, transform .2s, background .2s;
+    }
+    #drop-zone:hover, #drop-zone.dragging {
+      border-color: var(--signal);
+      transform: translateY(-2px);
+      background: rgba(255,88,61,.08);
+    }
+    #source-video { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .drop-icon { display: block; margin-bottom: 17px; color: var(--signal); font: 48px/1 Georgia, serif; }
+    .drop-title { display: block; font-size: 21px; font-weight: 700; }
+    .drop-detail { display: block; margin-top: 8px; color: var(--muted); font-size: 12px; }
+    #selected-file { color: var(--lime); }
+
+    .action-row { display: flex; align-items: center; gap: 14px; margin-top: 20px; }
+    #progress { flex: 1; min-height: 44px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    #progress.active::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 8px;
+      background: var(--signal);
+      border-radius: 50%;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse { to { opacity: .25; transform: scale(.72); } }
+
+    .result {
+      display: none;
+      margin-top: 22px;
+      padding: 17px;
+      background: rgba(201,240,107,.07);
+      border: 1px solid rgba(201,240,107,.28);
+      border-radius: 12px;
+    }
+    .result.visible { display: block; }
+    .result-title { margin: 0 0 8px; color: var(--lime); font-size: 13px; font-weight: 750; }
+    #result-path { display: block; margin-bottom: 14px; color: #c9c4b9; font: 11px/1.55 ui-monospace, monospace; overflow-wrap: anywhere; }
+
+    .privacy { display: flex; gap: 10px; margin-top: 20px; color: #747169; font-size: 11px; line-height: 1.5; }
+    .privacy strong { color: var(--lime); }
+
+    @media (max-width: 820px) {
+      .hero, .workspace { grid-template-columns: 1fr; }
+      .hero { gap: 25px; padding-top: 40px; }
+      .identity-panel { border-right: 0; border-bottom: 1px solid var(--line); }
+      .shell { width: min(100% - 24px, 680px); }
+      .local-only { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark">F</span> FrameCredit</div>
+      <div class="local-only">● 仅在这台电脑上运行</div>
+    </header>
+
+    <section class="hero">
+      <h1>让创作者身份，<br>跟着每一<em>帧</em>。</h1>
+      <p class="hero-copy">在上传 X 之前，把你的创作者身份直接写进视频画面。别人下载再上传，观众仍然知道视频来自谁。</p>
+    </section>
+
+    <main class="workspace">
+      <section class="panel identity-panel" aria-labelledby="identity-heading">
+        <div class="step">01 · Creator Identity</div>
+        <h2 id="identity-heading">确认创作者身份</h2>
+        <p class="hint">只需保存一次，下次打开会自动恢复。创作者标识会成为视频画面的一部分。</p>
+
+        <form id="identity-form">
+          <div class="field">
+            <label for="creator-name">X 显示名称</label>
+            <input id="creator-name" name="creator_name" autocomplete="name" placeholder="例如：小明" required>
+          </div>
+          <div class="field">
+            <label for="x-handle">X 用户名</label>
+            <input id="x-handle" name="x_handle" placeholder="例如：@xiaoming" required>
+          </div>
+          <div class="identity-preview-wrap">
+            <div class="eyebrow">创作者标识预览</div>
+            <output id="identity-preview">原创：你的名称&nbsp;&nbsp;@handle</output>
+          </div>
+          <button class="button ghost" type="submit">保存创作者身份</button>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="video-heading">
+        <div class="step">02 · Source Video</div>
+        <h2 id="video-heading">拖入要发布的视频</h2>
+        <p class="hint">源视频和署名成品都留在本机。处理时间取决于视频长度。</p>
+
+        <label id="drop-zone" for="source-video">
+          <input id="source-video" type="file" accept="video/*">
+          <span>
+            <span class="drop-icon">↘</span>
+            <span class="drop-title">把视频拖到这里</span>
+            <span class="drop-detail">或点击选择文件 · <span id="selected-file">尚未选择</span></span>
+          </span>
+        </label>
+
+        <div class="action-row">
+          <button id="process-video" class="button signal" type="button" disabled>生成署名成品</button>
+          <div id="progress" role="status" aria-live="polite">等待选择视频</div>
+        </div>
+
+        <section id="result" class="result" aria-labelledby="result-heading">
+          <p id="result-heading" class="result-title">✓ Attributed Export 已生成</p>
+          <output id="result-path"></output>
+          <button id="open-output" class="button" type="button">打开署名成品</button>
+        </section>
+
+        <p class="privacy"><strong>本地处理</strong><span>FrameCredit 只连接当前电脑上的 127.0.0.1，不会把视频发送到远程服务器。</span></p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const creatorName = document.querySelector('#creator-name');
+    const xHandle = document.querySelector('#x-handle');
+    const preview = document.querySelector('#identity-preview');
+    const identityForm = document.querySelector('#identity-form');
+    const input = document.querySelector('#source-video');
+    const dropZone = document.querySelector('#drop-zone');
+    const selectedFile = document.querySelector('#selected-file');
+    const processButton = document.querySelector('#process-video');
+    const progress = document.querySelector('#progress');
+    const result = document.querySelector('#result');
+    const resultPath = document.querySelector('#result-path');
+    const openButton = document.querySelector('#open-output');
+    let sourceVideo = null;
+    let openUrl = null;
+    let progressTimer = null;
+
+    function updatePreview() {
+      const name = creatorName.value.trim() || '你的名称';
+      const handle = xHandle.value.trim() || '@handle';
+      preview.textContent = `原创：${name}  ${handle}`;
+    }
+
+    async function saveIdentity() {
+      const response = await fetch('/api/identity', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({creator_name: creatorName.value, x_handle: xHandle.value})
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || '无法保存创作者身份');
+      return payload;
+    }
+
+    function chooseFile(file) {
+      sourceVideo = file || null;
+      selectedFile.textContent = sourceVideo ? sourceVideo.name : '尚未选择';
+      processButton.disabled = !sourceVideo;
+      progress.textContent = sourceVideo ? '已就绪，可以开始本地处理' : '等待选择视频';
+      result.classList.remove('visible');
+    }
+
+    creatorName.addEventListener('input', updatePreview);
+    xHandle.addEventListener('input', updatePreview);
+    identityForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        await saveIdentity();
+        progress.textContent = '创作者身份已保存在这台电脑上';
+      } catch (error) {
+        progress.textContent = error.message;
+      }
+    });
+
+    input.addEventListener('change', () => chooseFile(input.files[0]));
+    for (const eventName of ['dragenter', 'dragover']) {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.add('dragging');
+      });
+    }
+    for (const eventName of ['dragleave', 'drop']) {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.remove('dragging');
+      });
+    }
+    dropZone.addEventListener('drop', (event) => chooseFile(event.dataTransfer.files[0]));
+
+    processButton.addEventListener('click', async () => {
+      if (!sourceVideo) return;
+      processButton.disabled = true;
+      result.classList.remove('visible');
+      progress.classList.add('active');
+      const startedAt = Date.now();
+      const updateElapsedTime = () => {
+        const seconds = Math.floor((Date.now() - startedAt) / 1000);
+        progress.textContent = `正在本地生成署名成品 · 已用时 ${seconds} 秒`;
+      };
+      updateElapsedTime();
+      progressTimer = window.setInterval(updateElapsedTime, 250);
+      try {
+        await saveIdentity();
+        const response = await fetch('/api/process', {
+          method: 'POST',
+          headers: {
+            'Content-Type': sourceVideo.type || 'application/octet-stream',
+            'X-FrameCredit-Filename': encodeURIComponent(sourceVideo.name)
+          },
+          body: sourceVideo
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || '处理失败');
+        resultPath.textContent = payload.output;
+        openUrl = payload.open_url;
+        result.classList.add('visible');
+        progress.textContent = '处理完成，创作者标识已经写进视频';
+      } catch (error) {
+        progress.textContent = `处理失败：${error.message}`;
+      } finally {
+        window.clearInterval(progressTimer);
+        progressTimer = null;
+        progress.classList.remove('active');
+        processButton.disabled = false;
+      }
+    });
+
+    openButton.addEventListener('click', async () => {
+      if (!openUrl) return;
+      const response = await fetch(openUrl, {method: 'POST'});
+      if (!response.ok) {
+        const payload = await response.json();
+        progress.textContent = payload.error || '无法打开署名成品';
+      }
+    });
+
+    fetch('/api/identity')
+      .then((response) => response.json())
+      .then((identity) => {
+        creatorName.value = identity.creator_name || '';
+        xHandle.value = identity.x_handle || '';
+        updatePreview();
+      })
+      .catch(() => { progress.textContent = '无法读取已保存的创作者身份'; });
+  </script>
+</body>
+</html>

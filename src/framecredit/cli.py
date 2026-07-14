@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from .local_app import run_local_app
 from .processing import ProcessRequest, ProcessingError, create_attributed_export
 
 
@@ -19,6 +20,14 @@ def build_parser() -> argparse.ArgumentParser:
     process.add_argument("--creator-name", required=True, help="X display name")
     process.add_argument("--x-handle", required=True, help="X handle, such as @xiaoming")
     process.add_argument("--output", required=True, type=Path, help="output MP4 path")
+
+    app = commands.add_parser("app", help="open the local drag-and-drop interface")
+    app.add_argument("--port", type=int, default=8765, help="local port (default: 8765)")
+    app.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="start the local interface without opening a browser",
+    )
     return parser
 
 
@@ -41,5 +50,8 @@ def main(argv: list[str] | None = None) -> int:
 
         print(f"Created Attributed Export: {output}")
         return 0
+
+    if args.command == "app":
+        return run_local_app(port=args.port, open_browser=not args.no_browser)
 
     return 2
