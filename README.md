@@ -4,8 +4,10 @@ FrameCredit is a creator-side tool that burns visible attribution into a video
 before it is uploaded to X. If the video is downloaded and reposted, the copied
 video still shows who made it.
 
-The first MVP command adds a fixed Creator Marker containing the creator's X
-display name and handle:
+The MVP command adds a compact Creator Marker containing the Creator's X
+display name and handle. The marker switches discretely every 12 seconds
+between top-left, top-right, and upper-center positions so one part of the
+Source Video is not permanently obscured:
 
 ```bash
 python3 -m pip install -e .

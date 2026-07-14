@@ -23,3 +23,21 @@ The prototype validated this three-position shape on synthetic footage. Producti
 ## Blocked by
 
 - `01-first-attributed-export.md`
+
+## Manual validation constraints
+
+The first real-video validation used a 61:42, 1278×826, 30 fps Source Video of
+about 400 MB. CPU encoding completed in about 4 minutes 15 seconds (roughly
+12–14× real-time), while the fixed top-left Creator Marker obscured browser
+content and a long Creator Identity expanded into a banner.
+
+Issue 03 therefore also keeps a long Creator Marker within 35% of the frame
+width, uses a 12-second discrete interval, and must not materially regress the
+observed encoding speed. A full-length rerun remains a manual validation step;
+automated tests use short representative videos.
+
+A local before/after benchmark used the same 38-second, 960×540, 24 fps sample
+for three alternating runs of each implementation. The fixed-position median
+was 1.92 seconds and the distributed-position median was 1.91 seconds, so no
+short-sample regression was measurable. This does not replace the full-length
+manual rerun.

@@ -8,6 +8,9 @@ import tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 
+MARKER_INTERVAL_SECONDS = 12
+
+
 @dataclass(frozen=True)
 class ProcessRequest:
     source: Path
@@ -89,23 +92,54 @@ def _render_creator_marker(
     video_height: int,
     margin: int,
 ) -> None:
-    text = f"原创：{creator_name}  {x_handle}"
-    font_size = max(16, round(video_height * 0.045))
+    single_line = f"原创：{creator_name}  {x_handle}"
+    lines = (single_line,)
+    base_font_size = max(16, round(video_height * 0.045))
+    minimum_font_size = max(6, round(video_height * 0.015))
+    font_size = base_font_size
     font_path = _find_font()
-    max_width = max(120, video_width - (margin * 2))
+    available_width = video_width - (margin * 2)
+    max_width = max(1, min(available_width, int(video_width * 0.35)))
+    probe = Image.new("RGBA", (1, 1))
+    probe_draw = ImageDraw.Draw(probe)
 
     while True:
         font = ImageFont.truetype(font_path, font_size)
-        probe = Image.new("RGBA", (1, 1))
-        bounds = ImageDraw.Draw(probe).textbbox((0, 0), text, font=font)
+        padding_x = max(3, round(font_size * 0.65))
+        spacing = max(2, round(font_size * 0.18))
+        text = "\n".join(lines)
+        bounds = probe_draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            spacing=spacing,
+        )
         text_width = bounds[2] - bounds[0]
-        if text_width <= max_width - (font_size * 2) or font_size <= 12:
+        if text_width + (padding_x * 2) <= max_width:
+            break
+        if lines == (single_line,):
+            lines = (f"原创：{creator_name}", x_handle)
+            font_size = base_font_size
+            continue
+        if font_size <= minimum_font_size:
+            text_width_limit = max(1, max_width - (padding_x * 2))
+            lines = tuple(
+                _ellipsize_text(probe_draw, line, font, text_width_limit)
+                for line in lines
+            )
+            text = "\n".join(lines)
+            bounds = probe_draw.multiline_textbbox(
+                (0, 0),
+                text,
+                font=font,
+                spacing=spacing,
+            )
+            text_width = bounds[2] - bounds[0]
             break
         font_size -= 1
 
-    padding_x = max(10, round(font_size * 0.75))
-    padding_y = max(7, round(font_size * 0.45))
-    marker_width = min(max_width, text_width + (padding_x * 2))
+    padding_y = max(3, round(font_size * 0.4))
+    marker_width = text_width + (padding_x * 2)
     marker_height = (bounds[3] - bounds[1]) + (padding_y * 2)
     radius = max(6, round(marker_height * 0.22))
 
@@ -118,13 +152,35 @@ def _render_creator_marker(
         outline=(255, 255, 255, 70),
         width=1,
     )
-    draw.text(
-        (padding_x, padding_y - bounds[1]),
+    draw.multiline_text(
+        (padding_x - bounds[0], padding_y - bounds[1]),
         text,
         font=font,
+        spacing=spacing,
         fill=(255, 255, 255, 255),
     )
     image.save(output)
+
+
+def _ellipsize_text(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    font: ImageFont.FreeTypeFont,
+    max_width: int,
+) -> str:
+    def rendered_width(value: str) -> int:
+        bounds = draw.textbbox((0, 0), value, font=font)
+        return bounds[2] - bounds[0]
+
+    if rendered_width(text) <= max_width:
+        return text
+    ellipsis = "…"
+    if rendered_width(ellipsis) > max_width:
+        return ""
+    candidate = text
+    while candidate and rendered_width(candidate + ellipsis) > max_width:
+        candidate = candidate[:-1]
+    return candidate + ellipsis
 
 
 def _find_font() -> str:
@@ -150,6 +206,12 @@ def _burn_marker(
     output: Path,
     margin: int,
 ) -> None:
+    phase = f"mod(floor(t/{MARKER_INTERVAL_SECONDS}),3)"
+    x_position = (
+        f"if(eq({phase},0),{margin},"
+        f"if(eq({phase},1),W-w-{margin},(W-w)/2))"
+    )
+    y_position = f"if(eq({phase},2),H*0.18,{margin})"
     command = [
         ffmpeg,
         "-hide_banner",
@@ -165,7 +227,8 @@ def _burn_marker(
         "-i",
         str(marker),
         "-filter_complex",
-        f"[0:v][1:v]overlay=x={margin}:y={margin}:shortest=1[v]",
+        "[0:v][1:v]overlay="
+        f"x='{x_position}':y='{y_position}':eval=frame:shortest=1[v]",
         "-map",
         "[v]",
         "-map",

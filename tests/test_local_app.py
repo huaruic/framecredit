@@ -72,12 +72,18 @@ class LocalAppTest(unittest.TestCase):
                 return output;
             }}"""
             try:
-                subprocess.run(
+                browser_open = subprocess.run(
                     [PLAYWRIGHT_CLI, f"-s={session}", "open", url],
-                    check=True,
                     capture_output=True,
                     text=True,
                 )
+                if browser_open.returncode != 0:
+                    detail = (browser_open.stdout + browser_open.stderr).strip()
+                    if os.environ.get("CI") or os.environ.get(
+                        "FRAMECREDIT_REQUIRE_PLAYWRIGHT"
+                    ) == "1":
+                        self.fail(f"playwright-cli could not start: {detail}")
+                    self.skipTest(f"playwright-cli could not start: {detail}")
                 browser_result = subprocess.run(
                     [PLAYWRIGHT_CLI, f"-s={session}", "run-code", script],
                     capture_output=True,
