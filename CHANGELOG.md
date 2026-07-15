@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3 - 2026-07-15
+
+- The local app interface now follows the Geist dark design system
+  (shared tokens with the website), carries the new two-frame
+  repost-echo logo and favicon, and shows a visible keyboard focus
+  ring on the drop zone.
+
 ## 0.1.2 - 2026-07-15
 
 - `framecredit --version` prints the installed version.
