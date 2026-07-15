@@ -1,10 +1,4 @@
 <!doctype html>
-<!--
-  TODO: no production domain exists yet. "https://framecredit.example/" is a
-  placeholder used consistently in the canonical link, Open Graph tags,
-  JSON-LD, robots.txt, and sitemap.xml. A single find-and-replace of
-  "framecredit.example" across the site/ directory rebrands the domain.
--->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -12,29 +6,28 @@
   <title>FrameCredit: Burn Your X Handle Into Videos Before Posting</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ededed'/%3E%3Ctext x='16' y='23' font-family='-apple-system,sans-serif' font-size='19' font-weight='800' text-anchor='middle' fill='%23000'%3EF%3C/text%3E%3C/svg%3E">
   <meta name="description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
-  <link rel="canonical" href="https://framecredit.example/">
+  <link rel="canonical" href="https://huaruic.github.io/framecredit/">
   <meta name="theme-color" content="#000000">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="FrameCredit">
   <meta property="og:title" content="FrameCredit: Burn Your X Handle Into Videos Before Posting">
   <meta property="og:description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
-  <meta property="og:url" content="https://framecredit.example/">
-  <!-- TODO: add the real og.png (1200x630) at the site root before launch -->
-  <meta property="og:image" content="https://framecredit.example/og.png">
+  <meta property="og:url" content="https://huaruic.github.io/framecredit/">
+  <meta property="og:image" content="https://huaruic.github.io/framecredit/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FrameCredit: Burn Your X Handle Into Videos Before Posting">
   <meta name="twitter:description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
-  <meta name="twitter:image" content="https://framecredit.example/og.png">
+  <meta name="twitter:image" content="https://huaruic.github.io/framecredit/og.png">
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "FrameCredit",
-    "url": "https://framecredit.example/",
+    "url": "https://huaruic.github.io/framecredit/",
     "description": "FrameCredit is a local video attribution tool. It burns a compact 'X · @handle' Creator Marker into a video's frames before publishing, so downloaded and reposted copies still show who made the video. Output is an MP4 with H.264 video and AAC audio that keeps the source dimensions, audio track, and duration.",
     "applicationCategory": "MultimediaApplication",
     "operatingSystem": "macOS, Linux, Windows",
@@ -44,7 +37,7 @@
       "price": "0",
       "priceCurrency": "USD"
     },
-    "screenshot": "https://framecredit.example/app-screenshot.png",
+    "screenshot": "https://huaruic.github.io/framecredit/app-screenshot.png",
     "featureList": [
       "Burns a compact outlined 'X · @handle' Creator Marker into every frame",
       "Marker alternates between the two top corners every 30 seconds",
@@ -421,6 +414,7 @@
       <a href="#how-it-works">How it works</a>
       <a href="#install">Install</a>
       <a href="#faq">FAQ</a>
+      <a href="https://github.com/huaruic/framecredit">GitHub</a>
     </nav>
   </header>
 
@@ -506,8 +500,7 @@
         <div class="install-block">
           <h3>Install from source</h3>
           <p>FrameCredit is not yet published on PyPI, so install it from source with pip:</p>
-          <!-- TODO: replace the repository URL below with the real one once the code is published -->
-          <pre><code>git clone https://framecredit.example/framecredit.git
+          <pre><code>git clone https://github.com/huaruic/framecredit.git
 cd framecredit
 python3 -m pip install -e .</code></pre>
         </div>
@@ -595,6 +588,7 @@ python3 -m pip install -e .</code></pre>
           <a href="#install">Install</a>
           <a href="#privacy">Privacy</a>
           <a href="#faq">FAQ</a>
+          <a href="https://github.com/huaruic/framecredit">GitHub</a>
         </nav>
       </div>
       <p class="foot-note">FrameCredit processes video on your own machine and never uploads your footage. Last updated July 15, 2026.</p>

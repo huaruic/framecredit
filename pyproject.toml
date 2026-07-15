@@ -5,10 +5,40 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "framecredit"
 version = "0.1.0"
-description = "Burn durable creator attribution into videos before publishing."
+description = "Burn your X handle into your videos before you publish, so reposted copies still credit you. Local-only video attribution."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["Pillow>=10"]
+license = {text = "MIT"}
+authors = [{name = "Ernest Chen"}]
+keywords = [
+  "video-attribution",
+  "creator-tools",
+  "x",
+  "twitter",
+  "ffmpeg",
+  "video-processing",
+  "content-credit",
+  "repost",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Environment :: Web Environment",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Multimedia :: Video",
+]
+
+[project.urls]
+Homepage = "https://huaruic.github.io/framecredit/"
+Repository = "https://github.com/huaruic/framecredit"
+Issues = "https://github.com/huaruic/framecredit/issues"
+Changelog = "https://github.com/huaruic/framecredit/blob/main/CHANGELOG.md"
 
 [project.scripts]
 framecredit = "framecredit.cli:main"

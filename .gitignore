@@ -5,3 +5,7 @@ __pycache__/
 .playwright-cli/
 dist/
 build/
+.claude/
+.context/
+.playwright-mcp/
+.scratch/vercel-dark-ui/
