@@ -2,7 +2,7 @@
 
 Status: completed
 
-User stories: 1, 4, 5, 25, 26, 29, 30, 37, 40, 41
+User stories: 1, 4, 5, 13, 17
 
 ## What to build
 

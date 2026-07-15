@@ -3,7 +3,7 @@
 **Burn your X handle into every frame of your video before you publish, so reposted copies still credit you.**
 
 [![ci](https://github.com/huaruic/framecredit/actions/workflows/ci.yml/badge.svg)](https://github.com/huaruic/framecredit/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-white.svg)](LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-white.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-white.svg)](pyproject.toml)
 
 When your video gets downloaded and re-uploaded on X (Twitter), the repost
@@ -81,4 +81,6 @@ decisions in [docs/adr/](docs/adr/).
 
 ## License
 
-[MIT](LICENSE)
+[AGPL-3.0-or-later](LICENSE). You can use, modify, and redistribute
+FrameCredit freely; if you run a modified version as a network service, you
+must offer its source to your users under the same license.

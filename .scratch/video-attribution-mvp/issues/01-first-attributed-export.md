@@ -2,7 +2,7 @@
 
 Status: completed
 
-User stories: 2, 3, 6, 7, 8, 21–24, 26, 37
+User stories: 3, 6, 7, 12
 
 ## What to build
 
@@ -31,4 +31,4 @@ None - can start immediately.
   Two details were later superseded by Issue 04: the command no longer
   accepts a Creator display name (the Creator Identity is one X handle), and
   the fixed marker position was replaced by the alternating 30-second
-  two-corner schedule. User-story numbers refer to the pre-rewrite PRD.
+  two-corner schedule. User-story numbers were remapped to the rewritten 20-story PRD on 2026-07-15.

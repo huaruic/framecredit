@@ -27,4 +27,4 @@ Honest scope limits:
 ## Pages
 
 - [FrameCredit landing page](https://huaruic.com/framecredit/): what FrameCredit does, how the Creator Marker behaves, install and usage instructions, privacy details, scope limits, and an FAQ.
-- [Source code on GitHub](https://github.com/huaruic/framecredit): MIT-licensed Python source, issue tracker, contributing guide, and changelog.
+- [Source code on GitHub](https://github.com/huaruic/framecredit): AGPL-3.0-licensed Python source, issue tracker, contributing guide, and changelog.

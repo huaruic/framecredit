@@ -2,7 +2,7 @@
 
 Status: completed
 
-User stories: 27, 28
+User stories: 13, 14
 
 ## What to build
 
@@ -54,7 +54,7 @@ Make the complete local workflow safe enough for repeated MVP use. Unreadable or
   - Not verified — test coverage: only the existing-output path through the
     local app is tested; no end-to-end tests exist for unreadable or
     unsupported input through either public interface.
-- User-story numbers refer to the pre-rewrite PRD.
+- User-story numbers were remapped to the rewritten 20-story PRD on 2026-07-15.
 - Fixes 2026-07-15, closing the three defects from the audit above:
   - Unsupported input: `_video_dimensions` now also probes the container
     duration; still images (one-frame video stream, no duration) fail with

@@ -2,7 +2,7 @@
 
 ## 0.1.0 - 2026-07-15
 
-First public release.
+First public release, licensed under AGPL-3.0-or-later.
 
 - `framecredit process`: burn a compact outlined `X · @handle` Creator Marker
   into a video from the command line. H.264/AAC MP4 output that keeps the

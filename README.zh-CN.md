@@ -44,4 +44,5 @@ FrameCredit 的目标是**署名存活**（Attribution Survival），不是防�
 
 ## 许可证
 
-[MIT](LICENSE)
+[AGPL-3.0-or-later](LICENSE)。可自由使用、修改、再分发；若把修改版作为
+网络服务运行，必须以同样的许可证向用户提供源码。

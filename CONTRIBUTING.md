@@ -50,6 +50,12 @@ Most tests skip without ffmpeg. The browser test additionally needs
 3. Use conventional commit messages (`feat:`, `fix:`, `docs:` ... lowercase).
 4. CI must be green.
 
+## License of contributions
+
+FrameCredit is licensed under AGPL-3.0-or-later. By submitting a pull
+request you agree that your contribution is provided under the same license
+(inbound = outbound).
+
 ## Reporting bugs
 
 Open a GitHub issue with the template. For anything security-related, see
