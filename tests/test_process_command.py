@@ -27,6 +27,111 @@ class CreatorIdentityNormalizationTest(unittest.TestCase):
 
 @unittest.skipUnless(FFMPEG and FFPROBE, "ffmpeg and ffprobe are required")
 class ProcessCommandTest(unittest.TestCase):
+    def _cli_env(self) -> dict[str, str]:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(ROOT / "src")
+        return env
+
+    def _create_source_video(self, path: Path) -> None:
+        subprocess.run(
+            [
+                FFMPEG,
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-y",
+                "-f",
+                "lavfi",
+                "-i",
+                "color=c=black:s=320x180:r=24",
+                "-t",
+                "1",
+                "-c:v",
+                "libx264",
+                "-pix_fmt",
+                "yuv420p",
+                str(path),
+            ],
+            check=True,
+        )
+
+    def _run_process(self, source: Path, output: Path) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "framecredit",
+                "process",
+                str(source),
+                "--x-handle",
+                "@xiaoming",
+                "--output",
+                str(output),
+            ],
+            cwd=ROOT,
+            env=self._cli_env(),
+            capture_output=True,
+            text=True,
+        )
+
+    def test_process_command_reports_an_unreadable_source(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="framecredit-test-") as temp_dir:
+            workdir = Path(temp_dir)
+            garbage = workdir / "broken.mp4"
+            garbage.write_bytes(b"this is not a video")
+            output = workdir / "attributed.mp4"
+
+            result = self._run_process(garbage, output)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("could not read the source video", result.stderr)
+            self.assertFalse(output.exists())
+
+    def test_process_command_rejects_a_still_image_source(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="framecredit-test-") as temp_dir:
+            workdir = Path(temp_dir)
+            still = workdir / "picture.png"
+            Image.new("RGB", (320, 240), (24, 24, 24)).save(still)
+            output = workdir / "attributed.mp4"
+
+            result = self._run_process(still, output)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("not a playable video", result.stderr)
+            self.assertFalse(output.exists())
+
+    def test_process_command_does_not_overwrite_an_existing_output(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="framecredit-test-") as temp_dir:
+            workdir = Path(temp_dir)
+            source = workdir / "source.mp4"
+            self._create_source_video(source)
+            output = workdir / "attributed.mp4"
+            output.write_bytes(b"existing export")
+
+            result = self._run_process(source, output)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("already exists", result.stderr)
+            self.assertEqual(output.read_bytes(), b"existing export")
+
+    @unittest.skipIf(os.name == "nt", "read-only directory permissions are POSIX-only")
+    def test_a_failed_export_leaves_no_partial_output(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="framecredit-test-") as temp_dir:
+            workdir = Path(temp_dir)
+            source = workdir / "source.mp4"
+            self._create_source_video(source)
+            locked = workdir / "locked"
+            locked.mkdir()
+            os.chmod(locked, 0o500)
+            try:
+                result = self._run_process(source, locked / "attributed.mp4")
+
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("could not create the Attributed Export", result.stderr)
+                self.assertEqual(list(locked.iterdir()), [])
+            finally:
+                os.chmod(locked, 0o700)
+
     def test_process_command_requires_only_the_x_handle_for_creator_identity(self) -> None:
         env = os.environ.copy()
         env["PYTHONPATH"] = str(ROOT / "src")

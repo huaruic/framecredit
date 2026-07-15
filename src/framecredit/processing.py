@@ -32,6 +32,12 @@ def create_attributed_export(request: ProcessRequest) -> Path:
     if not request.source.is_file():
         raise ProcessingError(f"source video does not exist: {request.source}")
 
+    if request.output.exists():
+        raise ProcessingError(
+            f"output already exists: {request.output} "
+            "(choose another output path or delete the file first)"
+        )
+
     width, height = _video_dimensions(ffprobe, request.source)
     request.output.parent.mkdir(parents=True, exist_ok=True)
 
@@ -80,17 +86,31 @@ def _video_dimensions(ffprobe: str, source: Path) -> tuple[int, int]:
         "-select_streams",
         "v:0",
         "-show_entries",
-        "stream=width,height",
+        "stream=width,height:format=duration",
         "-of",
         "json",
         str(source),
     ]
     try:
         result = subprocess.run(command, check=True, capture_output=True, text=True)
-        stream = json.loads(result.stdout)["streams"][0]
-        return int(stream["width"]), int(stream["height"])
+        payload = json.loads(result.stdout)
+        stream = payload["streams"][0]
+        width, height = int(stream["width"]), int(stream["height"])
+        duration_text = payload.get("format", {}).get("duration")
     except (subprocess.CalledProcessError, KeyError, IndexError, ValueError, json.JSONDecodeError) as error:
         raise ProcessingError(f"could not read the source video: {source}") from error
+
+    # Still images decode as a one-frame video stream but report no duration.
+    try:
+        duration = float(duration_text) if duration_text is not None else 0.0
+    except ValueError:
+        duration = 0.0
+    if duration <= 0:
+        raise ProcessingError(
+            f"the source file is not a playable video "
+            f"(still images are not supported): {source}"
+        )
+    return width, height
 
 
 def _render_creator_marker(
@@ -210,6 +230,9 @@ def _burn_marker(
     phase = f"mod(floor(t/{MARKER_INTERVAL_SECONDS}),2)"
     x_position = f"if(eq({phase},0),{margin},W-w-{margin})"
     y_position = str(margin)
+    # ffmpeg writes to a partial file that only becomes the Attributed Export
+    # via an atomic rename, so a failed encode never leaves output behind.
+    partial = output.with_name(output.name + ".part")
     command = [
         ffmpeg,
         "-hide_banner",
@@ -248,11 +271,14 @@ def _burn_marker(
         "-shortest",
         "-f",
         "mp4",
-        str(output),
+        str(partial),
     ]
     try:
         subprocess.run(command, check=True, capture_output=True, text=True)
+        partial.replace(output)
     except subprocess.CalledProcessError as error:
         detail = error.stderr.strip().splitlines()
         message = detail[-1] if detail else "unknown ffmpeg error"
         raise ProcessingError(f"could not create the Attributed Export: {message}") from error
+    finally:
+        partial.unlink(missing_ok=True)

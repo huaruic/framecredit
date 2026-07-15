@@ -1,6 +1,6 @@
 # Handle processing errors and output files safely
 
-Status: ready-for-agent
+Status: completed
 
 User stories: 27, 28
 
@@ -11,12 +11,12 @@ Make the complete local workflow safe enough for repeated MVP use. Unreadable or
 ## Acceptance criteria
 
 - [x] An unreadable input fails without creating a misleading successful output.
-- [ ] An unsupported input produces an actionable message rather than raw internal diagnostics alone.
+- [x] An unsupported input produces an actionable message rather than raw internal diagnostics alone.
 - [x] The command exits unsuccessfully when processing fails.
 - [x] The local interface shows the failure and allows the Creator to try another Source Video.
-- [ ] An existing output file is not silently overwritten.
-- [ ] Temporary or partial outputs are not presented as completed Attributed Exports.
-- [ ] End-to-end tests cover unreadable input, unsupported input, and an existing output path through public interfaces.
+- [x] An existing output file is not silently overwritten.
+- [x] Temporary or partial outputs are not presented as completed Attributed Exports.
+- [x] End-to-end tests cover unreadable input, unsupported input, and an existing output path through public interfaces.
 
 ## Blocked by
 
@@ -55,3 +55,22 @@ Make the complete local workflow safe enough for repeated MVP use. Unreadable or
     local app is tested; no end-to-end tests exist for unreadable or
     unsupported input through either public interface.
 - User-story numbers refer to the pre-rewrite PRD.
+- Fixes 2026-07-15, closing the three defects from the audit above:
+  - Unsupported input: `_video_dimensions` now also probes the container
+    duration; still images (one-frame video stream, no duration) fail with
+    "the source file is not a playable video (still images are not
+    supported)". Covered by
+    `test_process_command_rejects_a_still_image_source`.
+  - Existing output: `create_attributed_export` refuses to run when the
+    output path exists ("output already exists: … choose another output
+    path or delete the file first"). Deleting the file is the explicit
+    user decision; the local app keeps choosing unique numbered names.
+    Covered by `test_process_command_does_not_overwrite_an_existing_output`.
+  - Partial outputs: ffmpeg now writes to `<name>.part` and the file is
+    renamed to the final output only after a successful encode; failures
+    unlink the partial. Covered by
+    `test_a_failed_export_leaves_no_partial_output` (read-only output
+    directory forces the encode to fail, directory stays empty).
+  - Unreadable input now has CLI end-to-end coverage too
+    (`test_process_command_reports_an_unreadable_source`). Full suite
+    18/18 after the changes.
