@@ -40,7 +40,7 @@ FrameCredit 的目标是**署名存活**（Attribution Survival），不是防�
 - 它能做到的是：视频经过普通搬运（转码、轻裁剪、加字幕）后，观众仍能读到
   你的用户名并搜索到你。
 
-更多说明见 [英文 README](README.md) 和 [官网](https://huaruic.github.io/framecredit/)。
+更多说明见 [英文 README](README.md) 和 [官网](https://huaruic.com/framecredit/)。
 
 ## 许可证
 

@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://huaruic.github.io/framecredit/"
+Homepage = "https://huaruic.com/framecredit/"
 Repository = "https://github.com/huaruic/framecredit"
 Issues = "https://github.com/huaruic/framecredit/issues"
 Changelog = "https://github.com/huaruic/framecredit/blob/main/CHANGELOG.md"

@@ -17,8 +17,8 @@ Everything runs on your own machine. No accounts, no uploads, no cloud.
 
 ![FrameCredit local app with a Source Video loaded and the Creator Marker preview visible](site/app-screenshot.png)
 
-**[Website](https://huaruic.github.io/framecredit/)** ·
-**[FAQ](https://huaruic.github.io/framecredit/#faq)** ·
+**[Website](https://huaruic.com/framecredit/)** ·
+**[FAQ](https://huaruic.com/framecredit/#faq)** ·
 **[Changelog](CHANGELOG.md)** ·
 **[简体中文](README.zh-CN.md)**
 

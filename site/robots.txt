@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://huaruic.github.io/framecredit/sitemap.xml
+Sitemap: https://huaruic.com/framecredit/sitemap.xml
