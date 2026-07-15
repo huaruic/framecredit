@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass
+import errno
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files
@@ -55,7 +56,18 @@ def run_local_app(*, port: int, open_browser: bool) -> int:
     store = IdentityStore(_app_home() / "identity.json")
     output_dir = _output_dir()
     handler = _handler_for(store, output_dir)
-    server = ThreadingHTTPServer(("127.0.0.1", port), handler)
+    try:
+        server = ThreadingHTTPServer(("127.0.0.1", port), handler)
+    except OSError as error:
+        if error.errno != errno.EADDRINUSE:
+            raise
+        print(
+            f"framecredit: port {port} is already in use "
+            f"(another FrameCredit may be running); "
+            f"try: framecredit app --port {port + 1}",
+            file=sys.stderr,
+        )
+        return 1
     actual_port = server.server_address[1]
     url = f"http://127.0.0.1:{actual_port}"
     print(f"FrameCredit local app: {url}", flush=True)

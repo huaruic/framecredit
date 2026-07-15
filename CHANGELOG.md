@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 2026-07-15
+
+- `framecredit app` now explains that the port is busy and suggests
+  `--port` instead of crashing with a traceback when the address is
+  already in use.
+
 ## 0.1.0 - 2026-07-15
 
 First public release, licensed under AGPL-3.0-or-later.

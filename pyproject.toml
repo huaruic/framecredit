@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "framecredit"
-version = "0.1.0"
+version = "0.1.1"
 description = "Burn your X handle into your videos before you publish, so reposted copies still credit you. Local-only video attribution."
 readme = "README.md"
 requires-python = ">=3.11"

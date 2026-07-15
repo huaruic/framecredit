@@ -11,8 +11,30 @@ from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 FFMPEG = shutil.which("ffmpeg")
 PLAYWRIGHT_CLI = shutil.which("playwright-cli")
+
+from framecredit.local_app import run_local_app
+
+
+class BusyPortTest(unittest.TestCase):
+    def test_app_reports_a_busy_port_instead_of_crashing(self) -> None:
+        import contextlib
+        import io
+        import socket
+
+        with socket.socket() as blocker:
+            blocker.bind(("127.0.0.1", 0))
+            blocker.listen(1)
+            port = blocker.getsockname()[1]
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = run_local_app(port=port, open_browser=False)
+
+        self.assertEqual(result, 1)
+        self.assertIn("already in use", stderr.getvalue())
+        self.assertIn(f"--port {port + 1}", stderr.getvalue())
 
 
 class LocalAppTest(unittest.TestCase):
