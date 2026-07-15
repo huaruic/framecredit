@@ -1,0 +1,603 @@
+<!doctype html>
+<!--
+  TODO: no production domain exists yet. "https://framecredit.example/" is a
+  placeholder used consistently in the canonical link, Open Graph tags,
+  JSON-LD, robots.txt, and sitemap.xml. A single find-and-replace of
+  "framecredit.example" across the site/ directory rebrands the domain.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FrameCredit: Burn Your X Handle Into Videos Before Posting</title>
+  <meta name="description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
+  <link rel="canonical" href="https://framecredit.example/">
+  <meta name="theme-color" content="#000000">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FrameCredit">
+  <meta property="og:title" content="FrameCredit: Burn Your X Handle Into Videos Before Posting">
+  <meta property="og:description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
+  <meta property="og:url" content="https://framecredit.example/">
+  <!-- TODO: add the real og.png (1200x630) at the site root before launch -->
+  <meta property="og:image" content="https://framecredit.example/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FrameCredit: Burn Your X Handle Into Videos Before Posting">
+  <meta name="twitter:description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
+  <meta name="twitter:image" content="https://framecredit.example/og.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "FrameCredit",
+    "url": "https://framecredit.example/",
+    "description": "FrameCredit is a local video attribution tool. It burns a compact 'X · @handle' Creator Marker into a video's frames before publishing, so downloaded and reposted copies still show who made the video. Output is an MP4 with H.264 video and AAC audio that keeps the source dimensions, audio track, and duration.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "macOS, Linux, Windows",
+    "softwareRequirements": "Python 3.11 or later; ffmpeg and ffprobe available on PATH",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "screenshot": "https://framecredit.example/app-screenshot.png",
+    "featureList": [
+      "Burns a compact outlined 'X · @handle' Creator Marker into every frame",
+      "Marker alternates between the two top corners every 30 seconds",
+      "Outputs MP4 with H.264 video and AAC audio",
+      "Keeps source dimensions, audio track, and duration",
+      "Processes entirely on the local machine; the app binds to 127.0.0.1 only",
+      "Command line interface plus a local drag-and-drop browser app"
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I keep credit when my video is reposted on X?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Burn your identity into the frames before you publish. FrameCredit adds a compact X · @handle Creator Marker to every frame, so an ordinary repost, even one that is re-encoded or lightly edited, still shows viewers who made the video and which account to search for."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does FrameCredit upload my video?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. FrameCredit runs entirely on your computer. The local app listens only on 127.0.0.1, your video is streamed to the FrameCredit process on the same machine, and the finished Attributed Export is written to ~/Movies/FrameCredit by default. Nothing is sent to a remote service."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does the Creator Marker look like?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A compact single line of outlined text that reads X · @yourhandle. It uses transparent outlined lettering instead of an opaque card, stays readable over light and dark footage, and alternates between the two top corners every 30 seconds, away from the subtitle region."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can a reposter remove the marker?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A determined editor can crop, cover, or paint over any visible marker, and FrameCredit does not claim otherwise. It changes the common case instead: ordinary reposts that download and re-upload your file, including re-encodes and light edits, keep your handle visible inside the frames."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What formats does FrameCredit output?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "One MP4 file with H.264 video and AAC audio, chosen for broad upload compatibility. The Attributed Export keeps the source dimensions and audio track, and its duration stays within 150 milliseconds of the source video."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What do I need to run FrameCredit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Python 3.11 or later, plus ffmpeg and ffprobe on your PATH. FrameCredit is not yet published on PyPI, so you install it from source with pip. It ships as a command line tool with an optional local drag-and-drop app started by framecredit app."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where are Attributed Exports saved?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The command writes wherever you point --output. The local app writes Attributed Exports to ~/Movies/FrameCredit by default and shows the exact output path in its result panel, where you can open the finished video directly."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #000000;
+      --panel: #0a0a0a;
+      --line: #262626;
+      --line-strong: #333333;
+      --text: #ededed;
+      --muted: #a1a1a1;
+      --blue: #0070f3;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-padding-top: 24px; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    .shell {
+      width: min(1080px, calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      z-index: 10;
+      padding: 10px 16px;
+      color: var(--bg);
+      background: var(--text);
+      border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus-visible { left: 0; }
+
+    /* Header */
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+    .brand-mark {
+      width: 22px;
+      height: 22px;
+      background: var(--text);
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      color: var(--bg);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .top nav { display: flex; gap: 24px; }
+    .top nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color .15s;
+    }
+    .top nav a:hover { color: var(--text); }
+
+    /* Hero */
+    .hero { padding: 72px 0 0; }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5.4vw, 54px);
+      font-weight: 650;
+      letter-spacing: -.035em;
+      line-height: 1.06;
+    }
+    .lede {
+      margin: 0 0 28px;
+      max-width: 52ch;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.55;
+      letter-spacing: -.005em;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      color: var(--bg);
+      background: var(--text);
+      border: 1px solid var(--text);
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .15s, border-color .15s;
+    }
+    .button:hover { background: #cccccc; border-color: #cccccc; }
+    .button:active { transform: translateY(1px); }
+    .button.secondary { color: var(--text); background: transparent; border-color: var(--line-strong); }
+    .button.secondary:hover { border-color: #555; background: #111; }
+
+    .shot {
+      margin: 56px 0 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .shot img { display: block; width: 100%; height: auto; }
+
+    /* Sections */
+    section.band { padding: 88px 0; border-top: 1px solid var(--line); }
+    .hero-wrap { padding-bottom: 88px; }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 27px;
+      font-weight: 650;
+      letter-spacing: -.025em;
+      line-height: 1.2;
+    }
+    h3 { margin: 0 0 8px; font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
+    p { margin: 0 0 16px; }
+    .prose { max-width: 68ch; color: var(--muted); }
+    .prose strong, .prose code { color: var(--text); }
+    p:last-child { margin-bottom: 0; }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .92em;
+    }
+    .prose code, li code {
+      padding: 1px 5px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* How it works: numbered rows */
+    .steps { margin: 32px 0 0; padding: 0; list-style: none; counter-reset: step; }
+    .steps li {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 20px;
+      padding: 26px 0;
+      border-top: 1px solid var(--line);
+      counter-increment: step;
+    }
+    .steps li::before {
+      content: counter(step, decimal-leading-zero);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 15px;
+      color: var(--muted);
+      padding-top: 3px;
+    }
+    .steps p { max-width: 62ch; color: var(--muted); }
+
+    /* Marker section: split */
+    .marker-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .marker-facts { margin: 0; padding: 0; list-style: none; color: var(--muted); }
+    .marker-facts li { padding: 12px 0; border-bottom: 1px solid var(--line); max-width: 56ch; }
+    .marker-facts li:last-child { border-bottom: 0; }
+
+    .marker-stage {
+      padding: 56px 20px;
+      text-align: center;
+      background: linear-gradient(90deg, #10151b 0% 50%, #c3cad2 50% 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .marker-sample {
+      display: inline-block;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      paint-order: stroke fill;
+      -webkit-text-stroke: 3px rgb(0 0 0 / .9);
+      white-space: nowrap;
+    }
+    .marker-note { margin-top: 14px; color: var(--muted); font-size: 13px; text-align: center; }
+
+    /* Install */
+    .install-block { margin-top: 36px; }
+    .install-block + .install-block { margin-top: 40px; }
+    .install-block p { max-width: 68ch; color: var(--muted); }
+    pre {
+      margin: 14px 0 0;
+      padding: 16px 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow-x: auto;
+      line-height: 1.7;
+    }
+    pre code { font-size: 13.5px; color: var(--text); white-space: pre; }
+
+    .req {
+      display: inline-block;
+      margin: 4px 0 8px;
+      padding: 10px 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .req code { color: var(--text); }
+
+    /* FAQ */
+    .faq-list { margin-top: 28px; border-top: 1px solid var(--line); }
+    .faq-list details { border-bottom: 1px solid var(--line); }
+    .faq-list summary {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 0;
+      cursor: pointer;
+      list-style: none;
+    }
+    .faq-list summary::-webkit-details-marker { display: none; }
+    .faq-list summary h3 { margin: 0; font-size: 16px; font-weight: 600; }
+    .faq-list summary::after {
+      content: "+";
+      flex: none;
+      color: var(--muted);
+      font-size: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      transition: transform .15s;
+    }
+    .faq-list details[open] summary::after { transform: rotate(45deg); }
+    .faq-list details p { max-width: 68ch; margin: 0 0 22px; color: var(--muted); }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--line); padding: 36px 0 48px; }
+    .foot-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .foot-row nav { display: flex; flex-wrap: wrap; gap: 20px; }
+    .foot-row nav a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    .foot-row nav a:hover { color: var(--text); }
+    .foot-note { margin-top: 18px; color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 32px, 640px); }
+      .hero { padding-top: 48px; }
+      section.band { padding: 64px 0; }
+      .top nav { gap: 16px; }
+      .steps li { grid-template-columns: 44px 1fr; gap: 14px; }
+      .marker-grid { grid-template-columns: 1fr; gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="shell top">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">F</span> FrameCredit</div>
+    <nav aria-label="Page sections">
+      <a href="#how-it-works">How it works</a>
+      <a href="#install">Install</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div class="shell hero-wrap">
+      <section class="hero" aria-label="Introduction">
+        <h1>Your handle on every frame.</h1>
+        <p class="lede">FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you.</p>
+        <div class="cta-row">
+          <a class="button" href="#install">Install FrameCredit</a>
+          <a class="button secondary" href="#how-it-works">See how it works</a>
+        </div>
+      </section>
+
+      <figure class="shot">
+        <img src="app-screenshot.png" alt="FrameCredit local app: an X handle saved on the left with a live Creator Marker preview, and a drag-and-drop video panel on the right" width="1200" height="943" loading="eager">
+      </figure>
+    </div>
+
+    <section class="band" id="what-is" aria-labelledby="what-is-h">
+      <div class="shell">
+        <h2 id="what-is-h">What is FrameCredit?</h2>
+        <div class="prose">
+          <p>FrameCredit is a local video processing tool that burns visible attribution into a video before it is uploaded to X. You save your X handle once, drop in a finished video, and FrameCredit produces an Attributed Export: a normal MP4 whose frames carry a compact <code>X · @handle</code> Creator Marker.</p>
+          <p>If the video is downloaded and reposted, the copied file still shows who made it. The marker is burned into the rendered frames rather than stored as metadata, so stripping metadata does not remove it, and viewers can search for your handle even when the repost carries no link back to you.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="how-it-works" aria-labelledby="how-h">
+      <div class="shell">
+        <h2 id="how-h">How FrameCredit works</h2>
+        <p class="prose">Three steps, all on your own machine.</p>
+        <ol class="steps">
+          <li>
+            <div>
+              <h3>Save your X handle once</h3>
+              <p>FrameCredit remembers it and previews the exact <code>X · @handle</code> identity before anything is burned in, so a typo never ends up in a long export.</p>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h3>Drop in a video</h3>
+              <p>FrameCredit burns a compact outlined <code>X · @handle</code> marker into every frame, alternating between the two top corners every 30 seconds so it never parks in one spot or drifts across the picture.</p>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h3>Publish the Attributed Export</h3>
+              <p>Take the finished file from <code>~/Movies/FrameCredit</code> and upload it to X as usual. It is an MP4 with H.264 video and AAC audio that keeps the source dimensions and audio track, with duration within 150 milliseconds of the source.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" id="marker" aria-labelledby="marker-h">
+      <div class="shell marker-grid">
+        <div>
+          <h2 id="marker-h">The Creator Marker</h2>
+          <ul class="marker-facts">
+            <li>Reads <code>X · @yourhandle</code>, so viewers know both the platform and the searchable account.</li>
+            <li>Transparent outlined text. No opaque card sits behind it.</li>
+            <li>Alternates between top-left and top-right every 30 seconds.</li>
+            <li>Stays in the top corners, clear of the subtitle region.</li>
+            <li>Compact by design: it identifies you without obscuring the content.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="marker-stage" role="img" aria-label="The Creator Marker rendered as outlined text over a half dark, half light background">
+            <span class="marker-sample mono" aria-hidden="true">X · @yourhandle</span>
+          </div>
+          <p class="marker-note">Outlined text stays readable on light and dark footage.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="install" aria-labelledby="install-h">
+      <div class="shell">
+        <h2 id="install-h">Install FrameCredit</h2>
+        <p class="req">Requires <code>Python 3.11+</code> with <code>ffmpeg</code> and <code>ffprobe</code> on <code>PATH</code>.</p>
+
+        <div class="install-block">
+          <h3>Install from source</h3>
+          <p>FrameCredit is not yet published on PyPI, so install it from source with pip:</p>
+          <!-- TODO: replace the repository URL below with the real one once the code is published -->
+          <pre><code>git clone https://framecredit.example/framecredit.git
+cd framecredit
+python3 -m pip install -e .</code></pre>
+        </div>
+
+        <div class="install-block">
+          <h3>Create an Attributed Export from the command line</h3>
+          <p>Point <code>framecredit process</code> at a finished video with your handle:</p>
+          <pre><code>framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4</code></pre>
+        </div>
+
+        <div class="install-block">
+          <h3>Or run the local drag-and-drop app</h3>
+          <p>One command opens an English browser interface where you save your handle, preview the marker, and drag in a video:</p>
+          <pre><code>framecredit app</code></pre>
+          <p>The interface listens only on <code>127.0.0.1</code> and writes Attributed Exports to <code>~/Movies/FrameCredit</code> by default. Keep the terminal running while you use it; press <code>Ctrl+C</code> to stop.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="privacy" aria-labelledby="privacy-h">
+      <div class="shell">
+        <h2 id="privacy-h">Processed locally, start to finish</h2>
+        <div class="prose">
+          <p><strong>Your video never leaves your machine.</strong> FrameCredit does all of its processing on your own computer: the local app binds to <code>127.0.0.1</code> only, the video is streamed to the FrameCredit process on the same computer, and nothing is sent to a remote service.</p>
+          <p>There are no accounts, no cloud processing, and no platform APIs. Unpublished footage stays unpublished until you upload the Attributed Export yourself.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="scope" aria-labelledby="scope-h">
+      <div class="shell">
+        <h2 id="scope-h">What FrameCredit does not promise</h2>
+        <div class="prose">
+          <p>FrameCredit's promise is <strong>Attribution Survival</strong>, not theft prevention. It makes your identity travel with an Ordinary Repost: a copied upload that keeps most of the content, including re-encodes and light edits. It does not try to make copying impossible.</p>
+          <p>A burned-in marker is pixels, not a hyperlink. It cannot be a clickable link or a QR code; a mention becomes clickable only in X post text, which an independently re-uploaded file cannot preserve.</p>
+          <p>Determined editing can defeat any visible marker. Someone willing to crop, cover, or reconstruct frames can remove attribution, and that remains outside what FrameCredit claims to solve.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="faq" aria-labelledby="faq-h">
+      <div class="shell">
+        <h2 id="faq-h">Frequently asked questions</h2>
+        <div class="faq-list">
+          <details>
+            <summary><h3>How do I keep credit when my video is reposted on X?</h3></summary>
+            <p>Burn your identity into the frames before you publish. FrameCredit adds a compact <code>X · @handle</code> Creator Marker to every frame, so an ordinary repost, even one that is re-encoded or lightly edited, still shows viewers who made the video and which account to search for.</p>
+          </details>
+          <details>
+            <summary><h3>Does FrameCredit upload my video?</h3></summary>
+            <p>No. FrameCredit runs entirely on your computer. The local app listens only on <code>127.0.0.1</code>, your video is streamed to the FrameCredit process on the same machine, and the finished Attributed Export is written to <code>~/Movies/FrameCredit</code> by default. Nothing is sent to a remote service.</p>
+          </details>
+          <details>
+            <summary><h3>What does the Creator Marker look like?</h3></summary>
+            <p>A compact single line of outlined text that reads <code>X · @yourhandle</code>. It uses transparent outlined lettering instead of an opaque card, stays readable over light and dark footage, and alternates between the two top corners every 30 seconds, away from the subtitle region.</p>
+          </details>
+          <details>
+            <summary><h3>Can a reposter remove the marker?</h3></summary>
+            <p>A determined editor can crop, cover, or paint over any visible marker, and FrameCredit does not claim otherwise. It changes the common case instead: ordinary reposts that download and re-upload your file, including re-encodes and light edits, keep your handle visible inside the frames.</p>
+          </details>
+          <details>
+            <summary><h3>What formats does FrameCredit output?</h3></summary>
+            <p>One MP4 file with H.264 video and AAC audio, chosen for broad upload compatibility. The Attributed Export keeps the source dimensions and audio track, and its duration stays within 150 milliseconds of the source video.</p>
+          </details>
+          <details>
+            <summary><h3>What do I need to run FrameCredit?</h3></summary>
+            <p>Python 3.11 or later, plus <code>ffmpeg</code> and <code>ffprobe</code> on your <code>PATH</code>. FrameCredit is not yet published on PyPI, so you install it from source with pip. It ships as a command line tool with an optional local drag-and-drop app started by <code>framecredit app</code>.</p>
+          </details>
+          <details>
+            <summary><h3>Where are Attributed Exports saved?</h3></summary>
+            <p>The command writes wherever you point <code>--output</code>. The local app writes Attributed Exports to <code>~/Movies/FrameCredit</code> by default and shows the exact output path in its result panel, where you can open the finished video directly.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <div class="foot-row">
+        <div class="brand"><span class="brand-mark" aria-hidden="true">F</span> FrameCredit</div>
+        <nav aria-label="Footer">
+          <a href="#what-is">What it is</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#install">Install</a>
+          <a href="#privacy">Privacy</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+      </div>
+      <p class="foot-note">FrameCredit processes video on your own machine and never uploads your footage. Last updated July 14, 2026.</p>
+    </div>
+  </footer>
+</body>
+</html>

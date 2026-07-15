@@ -1,0 +1,29 @@
+# FrameCredit
+
+> FrameCredit is a local video attribution tool for X creators. It burns a compact `X · @handle` Creator Marker into a video's frames before publishing, so downloaded and reposted copies still show who made the video and which X account to search for.
+
+Key facts:
+
+- What it does: a Creator saves their X handle once, drops in a finished video (the Source Video), and FrameCredit produces an Attributed Export with the Creator Marker burned into every frame.
+- The marker: a compact, one-line piece of transparent outlined text reading `X · @handle`. It alternates between the two top corners every 30 seconds, stays clear of the subtitle region, and remains readable over light and dark footage. There is no opaque card behind it.
+- Output: an MP4 with H.264 video and AAC audio for broad upload compatibility. It keeps the source dimensions and audio track, and duration stays within 150 milliseconds of the source.
+- Privacy: all processing happens on the Creator's own computer. The local app binds to 127.0.0.1 only, and the video is never sent to a remote service. There are no accounts, no cloud processing, and no platform APIs.
+- Interfaces: a command line tool and a local drag-and-drop browser app that share the same processing path. The app writes Attributed Exports to ~/Movies/FrameCredit by default.
+
+How to install (not yet published on PyPI; install from source):
+
+1. Clone the FrameCredit repository and run `python3 -m pip install -e .` from its root.
+2. Requires Python 3.11 or later, with ffmpeg and ffprobe available on PATH.
+3. Command line: `framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4`
+4. Local app: `framecredit app` (opens an English browser interface on 127.0.0.1).
+
+Honest scope limits:
+
+- FrameCredit's promise is Attribution Survival through ordinary reposts (re-encodes and light edits), not theft prevention.
+- A burned-in marker is pixels, not a hyperlink. It cannot be a clickable link or a QR code.
+- Determined editing can crop, cover, or reconstruct frames to remove any visible marker; that is outside FrameCredit's promise.
+- Out of scope: platform APIs, cloud processing, accounts, invisible watermarking, provenance infrastructure, and copied-video detection.
+
+## Pages
+
+- [FrameCredit landing page](https://framecredit.example/): what FrameCredit does, how the Creator Marker behaves, install and usage instructions, privacy details, scope limits, and an FAQ.
