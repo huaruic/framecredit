@@ -7,7 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ededed'/%3E%3Cg transform='translate(3.2,3.2) scale(0.8)'%3E%3Cmask id='m'%3E%3Crect width='32' height='32' fill='white'/%3E%3Crect x='9.8' y='10.8' width='22' height='18.4' rx='6' fill='black'/%3E%3C/mask%3E%3Cg mask='url(%23m)'%3E%3Crect x='2.4' y='5' width='17.6' height='14' rx='4' fill='none' stroke='%23000' stroke-width='2.6'/%3E%3Crect x='5.6' y='13.9' width='3.8' height='2.6' rx='1.3' fill='%23000'/%3E%3C/g%3E%3Crect x='12' y='13' width='17.6' height='14' rx='4' fill='none' stroke='%23000' stroke-width='2.6'/%3E%3Crect x='21.4' y='21.9' width='4.6' height='2.6' rx='1.3' fill='%23000'/%3E%3C/g%3E%3C/svg%3E">
   <meta name="description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
   <link rel="canonical" href="https://huaruic.com/framecredit/">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#050505">
   <link rel="preload" href="fonts/GeistVF.woff2" as="font" type="font/woff2" crossorigin>
 
   <meta property="og:type" content="website">
@@ -147,11 +147,13 @@
     /* END GEIST TOKENS v1 */
 
     :root {
-      --bg: var(--ds-background-200);
-      --panel: var(--ds-background-100);
-      --line: var(--ds-gray-400);
+      --bg: #050505;
+      --panel: #0d0d0d;
+      --surface-raised: #121212;
+      --surface-hover: #171717;
+      --line: #292929;
       --line-strong: var(--ds-gray-500);
-      --text: var(--ds-gray-1000);
+      --text: #f1f1f1;
       --muted: var(--ds-gray-900);
     }
 
@@ -182,7 +184,7 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100dvh;
       color: var(--text);
       background: var(--bg);
       font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
@@ -192,6 +194,18 @@
     }
 
     .mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-ligatures: none; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
 
     .shell {
       width: min(1200px, calc(100% - 48px));
@@ -224,10 +238,22 @@
       height: 64px;
       border-bottom: 1px solid var(--line);
     }
-    .brand { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+    }
     .brand-mark { width: 26px; height: 26px; flex: none; color: var(--text); }
     .top nav { display: flex; gap: 24px; }
     .top nav a {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
       color: var(--muted);
       text-decoration: none;
       font-size: 14px;
@@ -268,7 +294,7 @@
       text-decoration: none;
       font-size: 14px;
       font-weight: 500;
-      transition: background var(--ds-duration-state) var(--ds-ease), border-color var(--ds-duration-state) var(--ds-ease);
+      transition: background var(--ds-duration-state) var(--ds-ease), border-color var(--ds-duration-state) var(--ds-ease), transform var(--ds-duration-state) var(--ds-ease);
     }
     .button:hover { background: #cccccc; border-color: #cccccc; }
     .button:active { transform: translateY(1px); }
@@ -282,7 +308,29 @@
       background: var(--panel);
       overflow: hidden;
     }
-    .shot img { display: block; width: 100%; height: auto; }
+    .shot-link {
+      display: block;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      color: inherit;
+      cursor: zoom-in;
+    }
+    .shot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      transition: transform 300ms var(--ds-ease);
+    }
+    .shot-link:hover img { transform: scale(1.008); }
+    .shot-caption {
+      margin: 0;
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
 
     /* Sections */
     section.band { padding: 96px 0; border-top: 1px solid var(--line); }
@@ -354,7 +402,7 @@
     }
     .marker-sample {
       display: inline-block;
-      color: #ffffff;
+      color: #f5f5f5;
       font-size: 18px;
       font-weight: 600;
       letter-spacing: .02em;
@@ -368,17 +416,11 @@
     .platform-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1px;
+      gap: 16px;
       margin-top: 28px;
-      background: var(--line);
-      border: 1px solid var(--line);
-      border-radius: var(--ds-radius-surface);
-      overflow: hidden;
+      background: transparent;
     }
-    .platform-cell { min-width: 0; padding: 20px; background: var(--bg); }
-    .platform-cell h3 { margin-bottom: 12px; }
-    .platform-cell pre { margin: 0; border: 0; border-radius: 0; padding: 0; background: transparent; }
-    .platform-cell pre code { white-space: pre-wrap; word-break: break-word; }
+    .platform-cell { min-width: 0; }
 
     .alt-install { margin-top: 32px; }
     .alt-install summary {
@@ -393,6 +435,8 @@
     .install-block { margin-top: 36px; }
     .install-block + .install-block { margin-top: 40px; }
     .install-block p { max-width: 68ch; color: var(--muted); }
+    .install-block .command-block + p { margin-top: 18px; }
+    .install-block p + .command-block { margin-top: 14px; }
     pre {
       margin: 14px 0 0;
       padding: 16px 18px;
@@ -404,17 +448,85 @@
     }
     pre code { font-size: 13.5px; color: var(--text); white-space: pre; }
 
-    .req {
-      display: inline-block;
-      margin: 4px 0 8px;
-      padding: 10px 14px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--ds-radius-control);
+    .requirements {
+      margin: 0;
+      max-width: 68ch;
       color: var(--muted);
-      font-size: 14px;
     }
-    .req code { color: var(--text); }
+    .requirements strong, .requirements code { color: var(--text); }
+
+    .command-block {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface-raised);
+      border: 1px solid var(--line);
+      border-radius: var(--ds-radius-surface);
+    }
+    .command-head {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 6px 8px 6px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .command-head h3, .command-label {
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .command-copy {
+      min-height: 34px;
+      padding: 0 11px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--ds-radius-control);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color var(--ds-duration-state) var(--ds-ease), background var(--ds-duration-state) var(--ds-ease), border-color var(--ds-duration-state) var(--ds-ease), transform var(--ds-duration-state) var(--ds-ease);
+    }
+    .command-copy:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+      border-color: var(--muted);
+    }
+    .command-copy:active { transform: translateY(1px); }
+    .command-copy:disabled { cursor: wait; opacity: .7; }
+    .command-copy[data-state="success"] { color: var(--text); border-color: var(--text); }
+    .command-copy[data-state="error"] { color: #ff9b9b; border-color: #8f4444; }
+    .command-block pre {
+      margin: 0;
+      padding: 16px 18px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+    }
+
+    .privacy-band { padding-block: 72px; }
+    .privacy-facts {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr;
+      margin: 32px 0 0;
+      padding: 0;
+      border-block: 1px solid var(--line);
+      list-style: none;
+    }
+    .privacy-facts li { padding: 22px 26px; }
+    .privacy-facts li + li { border-left: 1px solid var(--line); }
+    .privacy-facts strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+    .privacy-facts span { color: var(--muted); font-size: 14px; }
 
     /* FAQ */
     .faq-list { margin-top: 28px; border-top: 1px solid var(--line); }
@@ -451,7 +563,7 @@
       gap: 16px;
     }
     .foot-row nav { display: flex; flex-wrap: wrap; gap: 20px; }
-    .foot-row nav a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    .foot-row nav a { display: inline-flex; min-height: 32px; align-items: center; color: var(--muted); text-decoration: none; font-size: 13px; }
     .foot-row nav a:hover { color: var(--text); }
     .foot-note { margin-top: 18px; color: var(--muted); font-size: 13px; }
 
@@ -467,6 +579,10 @@
       .top nav a:first-child { display: none; }
       .steps li { grid-template-columns: 44px 1fr; gap: 14px; }
       .marker-grid { grid-template-columns: 1fr; gap: 28px; }
+      .privacy-facts { grid-template-columns: 1fr; }
+      .privacy-facts li { padding-inline: 0; }
+      .privacy-facts li + li { border-top: 1px solid var(--line); border-left: 0; }
+      .shot img { transition: none; }
     }
   </style>
 </head>
@@ -474,7 +590,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="shell top">
-    <div class="brand"><svg class="brand-mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" fill="none"><defs><mask id="fc-mark-h"><rect width="32" height="32" fill="#fff"/><rect x="9.8" y="10.8" width="22" height="18.4" rx="6" fill="#000"/></mask></defs><g mask="url(#fc-mark-h)"><rect x="2.4" y="5" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="5.6" y="13.9" width="3.8" height="2.6" rx="1.3" fill="currentColor"/></g><rect x="12" y="13" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="21.4" y="21.9" width="4.6" height="2.6" rx="1.3" fill="currentColor"/></svg> FrameCredit</div>
+    <a class="brand" href="#main" aria-label="FrameCredit home"><svg class="brand-mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" fill="none"><defs><mask id="fc-mark-h"><rect width="32" height="32" fill="#fff"/><rect x="9.8" y="10.8" width="22" height="18.4" rx="6" fill="#000"/></mask></defs><g mask="url(#fc-mark-h)"><rect x="2.4" y="5" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="5.6" y="13.9" width="3.8" height="2.6" rx="1.3" fill="currentColor"/></g><rect x="12" y="13" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="21.4" y="21.9" width="4.6" height="2.6" rx="1.3" fill="currentColor"/></svg> FrameCredit</a>
     <nav aria-label="Page sections">
       <a href="#how-it-works">How It Works</a>
       <a href="#install">Install</a>
@@ -489,13 +605,16 @@
         <h1>Your handle on every frame.</h1>
         <p class="lede">FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you.</p>
         <div class="cta-row">
-          <a class="button" href="#install">Install FrameCredit</a>
-          <a class="button secondary" href="#how-it-works">See How It Works</a>
+          <a class="button" href="#install">Install</a>
+          <a class="button secondary" href="#how-it-works">How It Works</a>
         </div>
       </section>
 
       <figure class="shot">
-        <img src="app-screenshot.png" alt="FrameCredit local app: an X handle saved on the left with a live Creator Marker preview, and a drag-and-drop video panel on the right" width="1200" height="943" loading="eager">
+        <a class="shot-link" href="app-screenshot.png" aria-label="Open the full-size FrameCredit interface preview">
+          <img src="app-screenshot.png" alt="FrameCredit local app: an X handle saved on the left with a live Creator Marker preview, and a drag-and-drop video panel on the right" width="1200" height="943" loading="eager" fetchpriority="high">
+        </a>
+        <figcaption class="shot-caption">Open the full-size interface preview.</figcaption>
       </figure>
     </div>
 
@@ -562,49 +681,93 @@
     <section class="band" id="install" aria-labelledby="install-h">
       <div class="shell">
         <h2 id="install-h">Install FrameCredit</h2>
-        <p class="req">Requires <code>ffmpeg</code> and <code>ffprobe</code>; <code>uv</code> manages Python for you.</p>
+        <p class="requirements"><strong>Requirements:</strong> <code>ffmpeg</code> and <code>ffprobe</code>. <code>uv</code> manages Python for you.</p>
 
-        <div class="platform-grid">
-          <div class="platform-cell">
-            <h3>macOS</h3>
+        <div class="platform-grid" aria-label="Install prerequisites by platform">
+          <section class="platform-cell command-block">
+            <div class="command-head">
+              <h3>macOS</h3>
+              <button class="command-copy" type="button" data-copy hidden aria-label="Copy macOS prerequisites">Copy</button>
+            </div>
             <pre><code>brew install uv ffmpeg</code></pre>
-          </div>
-          <div class="platform-cell">
-            <h3>Windows</h3>
+            <span class="sr-only" data-copy-status aria-live="polite"></span>
+          </section>
+          <section class="platform-cell command-block">
+            <div class="command-head">
+              <h3>Windows</h3>
+              <button class="command-copy" type="button" data-copy hidden aria-label="Copy Windows prerequisites">Copy</button>
+            </div>
             <pre><code>winget install astral-sh.uv
 winget install --id Gyan.FFmpeg.Essentials -e --source winget</code></pre>
-          </div>
-          <div class="platform-cell">
-            <h3>Debian/Ubuntu</h3>
+            <span class="sr-only" data-copy-status aria-live="polite"></span>
+          </section>
+          <section class="platform-cell command-block">
+            <div class="command-head">
+              <h3>Debian/Ubuntu</h3>
+              <button class="command-copy" type="button" data-copy hidden aria-label="Copy Debian and Ubuntu prerequisites">Copy</button>
+            </div>
             <pre><code>sudo apt update &amp;&amp; sudo apt install ffmpeg
 curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
-          </div>
+            <span class="sr-only" data-copy-status aria-live="polite"></span>
+          </section>
         </div>
 
         <div class="install-block">
           <p>Then, in a new terminal:</p>
-          <pre><code>uv tool install framecredit
+          <div class="command-block">
+            <div class="command-head">
+              <span class="command-label">Install and launch</span>
+              <button class="command-copy" type="button" data-copy hidden aria-label="Copy install and launch commands">Copy</button>
+            </div>
+            <pre><code>uv tool install framecredit
 framecredit app</code></pre>
-          <p><code>framecredit app</code> opens the drag-and-drop interface on <code>127.0.0.1</code>; Attributed Exports land in <code>~/Movies/FrameCredit</code>. Prefer the terminal? <code>framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4</code></p>
+            <span class="sr-only" data-copy-status aria-live="polite"></span>
+          </div>
+          <p><code>framecredit app</code> opens the drag-and-drop interface on <code>127.0.0.1</code>. Attributed Exports land in <code>~/Movies/FrameCredit</code>.</p>
+          <div class="command-block">
+            <div class="command-head">
+              <span class="command-label">CLI export</span>
+              <button class="command-copy" type="button" data-copy hidden aria-label="Copy CLI export command">Copy</button>
+            </div>
+            <pre><code>framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4</code></pre>
+            <span class="sr-only" data-copy-status aria-live="polite"></span>
+          </div>
         </div>
 
         <details class="alt-install">
           <summary>Alternative installation (pip, from source)</summary>
-          <pre><code>python3 -m pip install framecredit</code></pre>
+          <div class="command-block">
+            <div class="command-head">
+              <span class="command-label">pip</span>
+              <button class="command-copy" type="button" data-copy hidden aria-label="Copy pip install command">Copy</button>
+            </div>
+            <pre><code>python3 -m pip install framecredit</code></pre>
+            <span class="sr-only" data-copy-status aria-live="polite"></span>
+          </div>
           <p>Needs your own Python 3.11+. Upgrade with <code>python3 -m pip install -U framecredit</code> or <code>uv tool upgrade framecredit</code>. Development version:</p>
-          <pre><code>git clone https://github.com/huaruic/framecredit.git
+          <div class="command-block">
+            <div class="command-head">
+              <span class="command-label">From source</span>
+              <button class="command-copy" type="button" data-copy hidden aria-label="Copy source installation commands">Copy</button>
+            </div>
+            <pre><code>git clone https://github.com/huaruic/framecredit.git
 cd framecredit
 python3 -m pip install -e .</code></pre>
+            <span class="sr-only" data-copy-status aria-live="polite"></span>
+          </div>
         </details>
       </div>
     </section>
 
-    <section class="band" id="privacy" aria-labelledby="privacy-h">
+    <section class="band privacy-band" id="privacy" aria-labelledby="privacy-h">
       <div class="shell">
         <h2 id="privacy-h">Processed locally, start to finish</h2>
-        <div class="prose">
-          <p><strong>Your video never leaves your machine.</strong> The app binds to <code>127.0.0.1</code> only; there are no accounts, no cloud processing, and no platform APIs.</p>
-        </div>
+        <p class="prose"><strong>Your video never leaves your machine.</strong> FrameCredit keeps the complete workflow on your computer.</p>
+        <ul class="privacy-facts">
+          <li><strong class="mono">127.0.0.1</strong><span>Local interface only</span></li>
+          <li><strong>No accounts</strong><span>Nothing to sign up for</span></li>
+          <li><strong>No uploads</strong><span>No remote processing or platform APIs</span></li>
+        </ul>
       </div>
     </section>
 
@@ -663,7 +826,7 @@ python3 -m pip install -e .</code></pre>
   <footer>
     <div class="shell">
       <div class="foot-row">
-        <div class="brand"><svg class="brand-mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" fill="none"><defs><mask id="fc-mark-f"><rect width="32" height="32" fill="#fff"/><rect x="9.8" y="10.8" width="22" height="18.4" rx="6" fill="#000"/></mask></defs><g mask="url(#fc-mark-f)"><rect x="2.4" y="5" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="5.6" y="13.9" width="3.8" height="2.6" rx="1.3" fill="currentColor"/></g><rect x="12" y="13" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="21.4" y="21.9" width="4.6" height="2.6" rx="1.3" fill="currentColor"/></svg> FrameCredit</div>
+        <a class="brand" href="#main" aria-label="FrameCredit home"><svg class="brand-mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" fill="none"><defs><mask id="fc-mark-f"><rect width="32" height="32" fill="#fff"/><rect x="9.8" y="10.8" width="22" height="18.4" rx="6" fill="#000"/></mask></defs><g mask="url(#fc-mark-f)"><rect x="2.4" y="5" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="5.6" y="13.9" width="3.8" height="2.6" rx="1.3" fill="currentColor"/></g><rect x="12" y="13" width="17.6" height="14" rx="4" stroke="currentColor" stroke-width="2.6"/><rect x="21.4" y="21.9" width="4.6" height="2.6" rx="1.3" fill="currentColor"/></svg> FrameCredit</a>
         <nav aria-label="Footer">
           <a href="#what-is">What It Is</a>
           <a href="#how-it-works">How It Works</a>
@@ -676,5 +839,62 @@ python3 -m pip install -e .</code></pre>
       <p class="foot-note">FrameCredit processes video on your own machine and never uploads your footage. Last updated July 15, 2026.</p>
     </div>
   </footer>
+  <script>
+    (() => {
+      const timers = new WeakMap();
+
+      const copyText = async (text) => {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        textarea.remove();
+        if (!copied) throw new Error("Copy command failed");
+      };
+
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.hidden = false;
+        const defaultLabel = button.textContent;
+
+        button.addEventListener("click", async () => {
+          const block = button.closest(".command-block");
+          const code = block?.querySelector("code");
+          const status = block?.querySelector("[data-copy-status]");
+          if (!code || !status) return;
+
+          clearTimeout(timers.get(button));
+          button.disabled = true;
+
+          try {
+            await copyText(code.textContent.trim());
+            button.textContent = "Copied";
+            button.dataset.state = "success";
+            status.textContent = "Command copied to clipboard.";
+          } catch (error) {
+            button.textContent = "Try again";
+            button.dataset.state = "error";
+            status.textContent = "Copy failed. Select the command and copy it manually.";
+          } finally {
+            button.disabled = false;
+          }
+
+          timers.set(button, setTimeout(() => {
+            button.textContent = defaultLabel;
+            delete button.dataset.state;
+            status.textContent = "";
+          }, 2200));
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
