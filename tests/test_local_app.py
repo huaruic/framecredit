@@ -162,6 +162,11 @@ class LocalAppTest(unittest.TestCase):
             self.assertIn('id="progress"', page)
             self.assertIn('id="result-path"', page)
             self.assertIn('id="open-output"', page)
+            self.assertIn(
+                '#drop-zone:has(#source-video:focus-visible)',
+                page,
+                "the drop zone must keep a visible keyboard focus ring",
+            )
 
     def test_creator_identity_is_retained_for_later_sessions(self) -> None:
         with tempfile.TemporaryDirectory(prefix="framecredit-app-test-") as temp_dir:

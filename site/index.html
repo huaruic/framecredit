@@ -8,6 +8,7 @@
   <meta name="description" content="FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you. Local video attribution, MP4 output, no uploads.">
   <link rel="canonical" href="https://huaruic.com/framecredit/">
   <meta name="theme-color" content="#000000">
+  <link rel="preload" href="fonts/GeistVF.woff2" as="font" type="font/woff2" crossorigin>
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="FrameCredit">
@@ -123,15 +124,48 @@
   </script>
 
   <style>
+    /* GEIST TOKENS v1 - duplicated in site/index.html and
+       src/framecredit/static/index.html; tests/test_design_tokens.py
+       enforces equality of this block. */
     :root {
       color-scheme: dark;
-      --bg: #000000;
-      --panel: #0a0a0a;
-      --line: #262626;
-      --line-strong: #333333;
-      --text: #ededed;
-      --muted: #a1a1a1;
-      --blue: #0070f3;
+      --ds-background-200: #000000;
+      --ds-background-100: #0a0a0a;
+      --ds-gray-100: #1a1a1a;
+      --ds-gray-400: #2e2e2e;
+      --ds-gray-500: #454545;
+      --ds-gray-800: #8f8f8f;
+      --ds-gray-900: #a1a1a1;
+      --ds-gray-1000: #ededed;
+      --ds-blue-900: #52a8ff;
+      --ds-alpha-border: rgb(255 255 255 / .14);
+      --ds-radius-control: 6px;
+      --ds-radius-surface: 12px;
+      --ds-duration-state: 150ms;
+      --ds-ease: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+    /* END GEIST TOKENS v1 */
+
+    :root {
+      --bg: var(--ds-background-200);
+      --panel: var(--ds-background-100);
+      --line: var(--ds-gray-400);
+      --line-strong: var(--ds-gray-500);
+      --text: var(--ds-gray-1000);
+      --muted: var(--ds-gray-900);
+    }
+
+    @font-face {
+      font-family: "Geist";
+      src: url("fonts/GeistVF.woff2") format("woff2");
+      font-weight: 100 900;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("fonts/GeistMonoVF.woff2") format("woff2");
+      font-weight: 100 900;
+      font-display: swap;
     }
 
     * { box-sizing: border-box; }
@@ -151,23 +185,23 @@
       min-height: 100vh;
       color: var(--text);
       background: var(--bg);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+      font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
       -webkit-font-smoothing: antialiased;
       font-size: 16px;
       line-height: 1.6;
     }
 
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-ligatures: none; }
 
     .shell {
-      width: min(1080px, calc(100% - 48px));
+      width: min(1200px, calc(100% - 48px));
       margin: 0 auto;
     }
 
     :focus-visible {
-      outline: 2px solid var(--blue);
-      outline-offset: 2px;
-      border-radius: 4px;
+      outline: none;
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ds-blue-900);
+      border-radius: var(--ds-radius-control);
     }
 
     .skip-link {
@@ -178,7 +212,7 @@
       padding: 10px 16px;
       color: var(--bg);
       background: var(--text);
-      border-radius: 0 0 8px 0;
+      border-radius: 0 0 var(--ds-radius-control) 0;
     }
     .skip-link:focus-visible { left: 0; }
 
@@ -207,7 +241,7 @@
       color: var(--muted);
       text-decoration: none;
       font-size: 14px;
-      transition: color .15s;
+      transition: color var(--ds-duration-state) var(--ds-ease);
     }
     .top nav a:hover { color: var(--text); }
 
@@ -215,9 +249,9 @@
     .hero { padding: 72px 0 0; }
     h1 {
       margin: 0 0 14px;
-      font-size: clamp(34px, 5.4vw, 54px);
-      font-weight: 650;
-      letter-spacing: -.035em;
+      font-size: clamp(38px, 5.8vw, 56px);
+      font-weight: 600;
+      letter-spacing: -.04em;
       line-height: 1.06;
     }
     .lede {
@@ -232,41 +266,41 @@
 
     .button {
       display: inline-flex;
-      min-height: 42px;
+      min-height: 40px;
       align-items: center;
       justify-content: center;
-      padding: 0 18px;
+      padding: 0 16px;
       color: var(--bg);
       background: var(--text);
       border: 1px solid var(--text);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-control);
       text-decoration: none;
       font-size: 14px;
-      font-weight: 600;
-      transition: background .15s, border-color .15s;
+      font-weight: 500;
+      transition: background var(--ds-duration-state) var(--ds-ease), border-color var(--ds-duration-state) var(--ds-ease);
     }
     .button:hover { background: #cccccc; border-color: #cccccc; }
     .button:active { transform: translateY(1px); }
-    .button.secondary { color: var(--text); background: transparent; border-color: var(--line-strong); }
-    .button.secondary:hover { border-color: #555; background: #111; }
+    .button.secondary { color: var(--text); background: var(--panel); border-color: var(--ds-alpha-border); }
+    .button.secondary:hover { border-color: var(--ds-gray-500); background: var(--ds-gray-100); }
 
     .shot {
       margin: 56px 0 0;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-surface);
       background: var(--panel);
       overflow: hidden;
     }
     .shot img { display: block; width: 100%; height: auto; }
 
     /* Sections */
-    section.band { padding: 88px 0; border-top: 1px solid var(--line); }
-    .hero-wrap { padding-bottom: 88px; }
+    section.band { padding: 96px 0; border-top: 1px solid var(--line); }
+    .hero-wrap { padding-bottom: 96px; }
 
     h2 {
       margin: 0 0 16px;
-      font-size: 27px;
-      font-weight: 650;
+      font-size: 28px;
+      font-weight: 600;
       letter-spacing: -.025em;
       line-height: 1.2;
     }
@@ -277,8 +311,9 @@
     p:last-child { margin-bottom: 0; }
 
     code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: .92em;
+      font-variant-ligatures: none;
     }
     .prose code, li code {
       padding: 1px 5px;
@@ -300,7 +335,7 @@
     }
     .steps li::before {
       content: counter(step, decimal-leading-zero);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 15px;
       color: var(--muted);
       padding-top: 3px;
@@ -323,7 +358,7 @@
       text-align: center;
       background: linear-gradient(90deg, #10151b 0% 50%, #c3cad2 50% 100%);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-surface);
     }
     .marker-sample {
       display: inline-block;
@@ -346,7 +381,7 @@
       padding: 16px 18px;
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-control);
       overflow-x: auto;
       line-height: 1.7;
     }
@@ -358,7 +393,7 @@
       padding: 10px 14px;
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-control);
       color: var(--muted);
       font-size: 14px;
     }
@@ -383,8 +418,8 @@
       flex: none;
       color: var(--muted);
       font-size: 18px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      transition: transform .15s;
+      font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      transition: transform var(--ds-duration-state) var(--ds-ease);
     }
     .faq-list details[open] summary::after { transform: rotate(45deg); }
     .faq-list details p { max-width: 68ch; margin: 0 0 22px; color: var(--muted); }
@@ -408,6 +443,7 @@
       .hero { padding-top: 48px; }
       section.band { padding: 64px 0; }
       .top nav { gap: 16px; }
+      .top nav a:first-child { display: none; }
       .steps li { grid-template-columns: 44px 1fr; gap: 14px; }
       .marker-grid { grid-template-columns: 1fr; gap: 28px; }
     }
@@ -419,7 +455,7 @@
   <header class="shell top">
     <div class="brand"><span class="brand-mark" aria-hidden="true">F</span> FrameCredit</div>
     <nav aria-label="Page sections">
-      <a href="#how-it-works">How it works</a>
+      <a href="#how-it-works">How It Works</a>
       <a href="#install">Install</a>
       <a href="#faq">FAQ</a>
       <a href="https://github.com/huaruic/framecredit">GitHub</a>
@@ -433,7 +469,7 @@
         <p class="lede">FrameCredit burns your X handle into your video before you publish, so reposted copies still credit you.</p>
         <div class="cta-row">
           <a class="button" href="#install">Install FrameCredit</a>
-          <a class="button secondary" href="#how-it-works">See how it works</a>
+          <a class="button secondary" href="#how-it-works">See How It Works</a>
         </div>
       </section>
 
@@ -618,8 +654,8 @@ ffprobe -version</code></pre>
       <div class="foot-row">
         <div class="brand"><span class="brand-mark" aria-hidden="true">F</span> FrameCredit</div>
         <nav aria-label="Footer">
-          <a href="#what-is">What it is</a>
-          <a href="#how-it-works">How it works</a>
+          <a href="#what-is">What It Is</a>
+          <a href="#how-it-works">How It Works</a>
           <a href="#install">Install</a>
           <a href="#privacy">Privacy</a>
           <a href="#faq">FAQ</a>

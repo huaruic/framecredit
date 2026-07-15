@@ -6,19 +6,38 @@
   <title>FrameCredit · Local video attribution</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ededed'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial' font-size='18' font-weight='700'%3EF%3C/text%3E%3C/svg%3E">
   <style>
-    /* Vercel-style dark theme. Radius: 8px everywhere. */
+    /* GEIST TOKENS v1 - duplicated in site/index.html and
+       src/framecredit/static/index.html; tests/test_design_tokens.py
+       enforces equality of this block. */
     :root {
       color-scheme: dark;
-      --bg: #000000;
-      --panel: #0a0a0a;
-      --field: #000000;
-      --line: #262626;
-      --line-strong: #333333;
-      --text: #ededed;
-      --muted: #a1a1a1;
-      --faint: #666666;
-      --blue: #0070f3;
-      --blue-ring: rgb(0 112 243 / .24);
+      --ds-background-200: #000000;
+      --ds-background-100: #0a0a0a;
+      --ds-gray-100: #1a1a1a;
+      --ds-gray-400: #2e2e2e;
+      --ds-gray-500: #454545;
+      --ds-gray-800: #8f8f8f;
+      --ds-gray-900: #a1a1a1;
+      --ds-gray-1000: #ededed;
+      --ds-blue-900: #52a8ff;
+      --ds-alpha-border: rgb(255 255 255 / .14);
+      --ds-radius-control: 6px;
+      --ds-radius-surface: 12px;
+      --ds-duration-state: 150ms;
+      --ds-ease: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+    /* END GEIST TOKENS v1 */
+
+    :root {
+      --bg: var(--ds-background-200);
+      --panel: var(--ds-background-100);
+      --field: var(--ds-background-200);
+      --line: var(--ds-gray-400);
+      --line-strong: var(--ds-gray-500);
+      --text: var(--ds-gray-1000);
+      --muted: var(--ds-gray-900);
+      --faint: var(--ds-gray-800);
+      --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--ds-blue-900);
     }
 
     * { box-sizing: border-box; }
@@ -66,7 +85,7 @@
     h1 {
       margin: 40px 0 8px;
       font-size: 32px;
-      font-weight: 650;
+      font-weight: 600;
       letter-spacing: -.035em;
     }
     .lede { margin: 0 0 36px; color: var(--muted); font-size: 15px; letter-spacing: -.005em; }
@@ -75,11 +94,11 @@
       display: grid;
       grid-template-columns: minmax(280px, .72fr) minmax(420px, 1.28fr);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-surface);
       background: var(--panel);
     }
 
-    .panel { padding: 28px; min-width: 0; }
+    .panel { padding: 24px; min-width: 0; }
     .identity-panel { border-right: 1px solid var(--line); }
 
     h2 { margin: 0 0 6px; font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
@@ -93,12 +112,12 @@
       color: var(--text);
       background: var(--field);
       border: 1px solid var(--line-strong);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-control);
       outline: none;
-      transition: border-color .15s, box-shadow .15s;
+      transition: border-color var(--ds-duration-state) var(--ds-ease), box-shadow var(--ds-duration-state) var(--ds-ease);
     }
-    .field input:hover { border-color: #444; }
-    .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
+    .field input:hover { border-color: var(--ds-gray-500); }
+    .field input:focus { border-color: transparent; box-shadow: var(--focus-ring); }
     .field input::placeholder { color: var(--faint); }
 
     .identity-preview-wrap { margin: 4px 0 24px; }
@@ -121,7 +140,7 @@
       text-align: center;
       background: linear-gradient(90deg, #10151b 0% 50%, #c3cad2 50% 100%);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-surface);
     }
     .preview-note { margin-top: 10px; color: var(--faint); font-size: 12px; }
 
@@ -134,18 +153,18 @@
       color: var(--bg);
       background: var(--text);
       border: 1px solid var(--text);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-control);
       cursor: pointer;
       font-size: 14px;
-      font-weight: 600;
-      transition: background .15s, border-color .15s, color .15s;
+      font-weight: 500;
+      transition: background var(--ds-duration-state) var(--ds-ease), border-color var(--ds-duration-state) var(--ds-ease), color var(--ds-duration-state) var(--ds-ease);
     }
     .button:hover { background: #cccccc; border-color: #cccccc; }
     .button:active { transform: translateY(1px); }
-    .button:disabled { color: var(--faint); background: #1a1a1a; border-color: #1a1a1a; cursor: not-allowed; transform: none; }
-    .button:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--blue-ring); border-color: var(--blue); }
-    .button.secondary { color: var(--text); background: transparent; border-color: var(--line-strong); }
-    .button.secondary:hover { border-color: #555; background: #111; }
+    .button:disabled { color: var(--faint); background: var(--ds-gray-100); border-color: var(--ds-gray-100); cursor: not-allowed; transform: none; }
+    .button:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .button.secondary { color: var(--text); background: var(--panel); border-color: var(--ds-alpha-border); }
+    .button.secondary:hover { border-color: var(--ds-gray-500); background: var(--ds-gray-100); }
 
     #drop-zone {
       position: relative;
@@ -156,11 +175,12 @@
       text-align: center;
       background: var(--field);
       border: 1px dashed var(--line-strong);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-surface);
       cursor: pointer;
-      transition: border-color .15s, background .15s;
+      transition: border-color var(--ds-duration-state) var(--ds-ease), background var(--ds-duration-state) var(--ds-ease);
     }
-    #drop-zone:hover, #drop-zone.dragging { border-color: var(--blue); background: rgb(0 112 243 / .04); }
+    #drop-zone:hover, #drop-zone.dragging { border-color: var(--ds-blue-900); background: rgb(82 168 255 / .05); }
+    #drop-zone:has(#source-video:focus-visible) { border-color: transparent; box-shadow: var(--focus-ring); }
     #drop-zone.has-preview { padding: 0; border-style: solid; border-color: var(--line); overflow: hidden; }
     #source-video { position: absolute; width: 1px; height: 1px; opacity: 0; }
 
@@ -186,13 +206,13 @@
       color: var(--muted);
       background: transparent;
       border: 1px solid var(--line-strong);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-control);
       cursor: pointer;
       font-size: 13px;
-      transition: color .15s, border-color .15s;
+      transition: color var(--ds-duration-state) var(--ds-ease), border-color var(--ds-duration-state) var(--ds-ease);
     }
-    .chip:hover { color: var(--text); border-color: #555; }
-    .chip:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--blue-ring); border-color: var(--blue); }
+    .chip:hover { color: var(--text); border-color: var(--ds-gray-500); }
+    .chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
     .chip.active { color: var(--text); border-color: var(--text); }
 
     .action-row { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
@@ -204,7 +224,7 @@
       width: 7px;
       height: 7px;
       margin-right: 9px;
-      background: var(--blue);
+      background: var(--ds-blue-900);
       border-radius: 50%;
       animation: pulse 1s infinite alternate;
     }
@@ -216,7 +236,7 @@
       padding: 16px;
       background: var(--field);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--ds-radius-control);
     }
     .result.visible { display: block; }
     .result-title { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
