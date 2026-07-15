@@ -1,6 +1,11 @@
 # Plan (FINAL): Landing 与本地 app 页面对齐 Geist 设计规范
 
-Status: final v3, ready to implement
+Status: implemented and verified 2026-07-15
+Verification results: token-equality test green; full suite 21/21 plus forced
+Playwright; keyboard focus walk incl. drop zone; contrast measured 6.49/8.13/
+17.94 on black (all AA); 390/820/1200 checked; live LCP 1164ms with no
+duplicate font fetch; Lighthouse accessibility/best-practices/SEO all 100;
+assets regenerated (app screenshot, og, social preview re-uploaded).
 History: v1 landing-only 草案 → v2 扩至双页 + taste-skill 合规检查 →
 v3 吸收 codex 两轮 review（sessions `019f661e-5587-77e2-b5e7-6eb39546dc95`）。
 本文为唯一有效版本，v1/v2 中与此冲突的内容一律以本文为准。
