@@ -1,108 +1,118 @@
-# Plan: Landing page 对齐 Geist 设计规范
+# Plan (FINAL): Landing 与本地 app 页面对齐 Geist 设计规范
 
-Status: proposed（依据 vercel.com/design.md 与 design.dark.md，2026-07-15 抓取）
+Status: final v3, ready to implement
+History: v1 landing-only 草案 → v2 扩至双页 + taste-skill 合规检查 →
+v3 吸收 codex 两轮 review（sessions `019f661e-5587-77e2-b5e7-6eb39546dc95`）。
+本文为唯一有效版本，v1/v2 中与此冲突的内容一律以本文为准。
 
-## 背景
+## 范围与一致性策略
 
-当前 landing（site/index.html）是"Vercel 风格"的手工近似。现以 Geist
-官方规范为基准做一次系统对齐。范围仅 landing page；本地 app 页面
-（src/framecredit/static/index.html）后续可复用同一套 token，另行处理。
+- 两个页面：site/index.html（landing，GitHub Pages）与
+  src/framecredit/static/index.html（本地 app）。
+- **只共享 primitives**（颜色、灰阶、圆角、焦点环、动效时长、按钮规格）；
+  排版密度与布局各自保留——landing 是营销页，app 是产品界面，
+  不强行同构。
+- 无构建系统：两文件各持一份带 `/* GEIST TOKENS v1 */` 标记的变量块，
+  新增 `tests/test_design_tokens.py`（纯文本：提取两文件标记块、
+  归一化空白、断言相等）作为防漂移的强制机制，注释不作为约束手段。
 
-## 1. 颜色 token 对齐（现值 → Geist dark 目标值）
+## 定稿 token 映射（修正版）
 
-| 用途 | 现值 | Geist dark | 动作 |
-|---|---|---|---|
-| 页面/面板背景 | #000 / #0a0a0a | background-100/200 均为 #000000 | 面板不再用 #0a0a0a 实色，改用 #000 + gray-alpha 边框分层 |
-| 面板层级底色 | - | gray-100 #1a1a1a（hover #1f1f1f 级） | 需要"抬起"的卡片（如安装块代码区）用 #1a1a1a |
-| 默认边框 | #262626 | gray-400 #2e2e2e | 替换 |
-| 强边框/hover | #333333 | gray-500 #454545 | 替换，hover 递进 400→500→600 |
-| 主文字 | #ededed | primary #ededed | 保持 |
-| 次文字 | #a1a1a1 | secondary #a0a0a0 | 微调 |
-| 弱文字 | #666 | gray-700 #8f8f8f（disabled 档） | 改 #8f8f8f，保证 AA |
-| 焦点蓝 | #0070f3 | dark 模式焦点应为 blue-900 #47a8ff | 替换（#0070f3 是亮色模式值，黑底上对比不足） |
-| 焦点环 | outline 2px | 双层 box-shadow: 0 0 0 2px #000, 0 0 0 4px #47a8ff | 替换 |
-
-全部收敛为 CSS 变量，命名跟随 Geist 语义（--ds-background-100、
---ds-gray-400、--ds-blue-900…），为以后 app 页复用做准备。
-
-## 2. 字体：自托管 Geist
-
-landing 是公开网站（非本地 app 的 CSP 约束），可以自托管字体：
-
-- 下载 Geist Sans（400/500/600）与 Geist Mono（400）woff2，
-  放 site/fonts/（Geist 为 SIL OFL 许可，允许自托管分发）；
-- @font-face + font-display: swap + preload 首屏两档；
-- fallback 栈保留现有系统字体；
-- 体积预算：4 个 woff2 约 120-160KB，可接受；不引任何 CDN。
-
-排版 token 对齐：
-
-- 标题走 heading 系：h1 = heading-40（40px/600/-1.6px 级），
-  section h2 = heading-32，卡片 h3 = heading-16；
-- 正文 copy 系（copy-16：400/行高 1.6）；按钮 button-14（500 weight，
-  现在的 600/700 全部降到 500）；
-- 每视图不超过两种字重（400/500/600 里挑两档主用，600 只给标题）。
-
-## 3. 圆角与阴影
-
-- 按钮/输入/代码块/FAQ 项：8px → 6px（Geist sm）；
-- 大媒体面（截图框、hero 卡）：8px → 12px（md）；
-- 不再混用其他圆角；
-- 抬起的卡片加 Geist dark raised 阴影 `0 1px 2px rgba(0,0,0,.16)`，
-  其余保持平面 + 边框。
-
-## 4. 间距节奏
-
-按 4px 尺度审计：组内 8px、组间 16px、区块间 32-40px；
-卡片 padding 统一 24px（现 .panel 28px）；hero 区 32px。
-shell 宽度 1080px → 1200px（Geist 容器标准），断点对照
-sm 401 / md 601 / lg 961 / xl 1200。
-
-## 5. 按钮体系
-
-| 变体 | 现状 | Geist dark 目标 |
+| 语义变量 | 值 | 用途 |
 |---|---|---|
-| Primary | #fff 底黑字，hover #ccc | #ededed 底 #000 字，40px 高，6px 圆角，hover 降一档灰 |
-| Secondary | 透明底 + #333 边 | #000 底 + gray-alpha 半透明边，hover 边框 500 档 |
-| Tertiary（新增，可选） | - | 透明底 #ededed 字，hover 灰底，用于 nav 内链 |
+| --ds-background-200 | #000000 | 页面底色 |
+| --ds-background-100 | #0a0a0a | 面板/卡片 surface（保留现有分层，v2 中"面板改纯黑"作废） |
+| --ds-gray-100 | #1a1a1a | 更高一层 fill（代码块底、hover 面） |
+| --ds-gray-400 | #2e2e2e | 默认边框 |
+| --ds-gray-500 | #454545 | hover 边框 |
+| --ds-gray-800 | #8f8f8f | 最弱文字（隐私注脚等；黑底对比约 6.5:1，过 AA） |
+| --ds-gray-900 | #a1a1a1 | 次要文字（与现值相同，不动） |
+| --ds-gray-1000 | #ededed | 主文字（不动） |
+| --ds-blue-900 | #52a8ff | 暗色焦点环外环 |
+| --ds-focus-ring | 0 0 0 2px var(元素 surface), 0 0 0 4px var(--ds-blue-900) | 双层焦点环；内环用所在 surface 变量，不硬编码 |
 
-状态递进统一：背景 100→200→300，边框 400→500→600。
+注：两份抓取源对暗色焦点蓝记录不一致（#47a8ff vs #52a8ff），
+codex 联网核对 Geist 文档为 blue-900 = #52a8ff，采用后者。
+#0070f3 是 blue-700/action blue，不再用作暗色焦点环。
 
-## 6. 动效与交互
+## 圆角（按角色，不按"控件/容器"二分）
 
-- 过渡时长统一 token：状态 150ms、浮层 200ms；
-  easing `cubic-bezier(0.175, 0.885, 0.32, 1.1)`；
-- 保持 prefers-reduced-motion 全关；
-- "motion 只用于说明变化"：现页只有 hover/焦点/平滑滚动，符合，不加新动效。
+- 6px：按钮、输入框、chips、代码块、FAQ 项（现 8/10px 者）
+- 12px：workspace 面板、截图框、hero 媒体面（app 现 8px、landing 现 8px）
+- 不引入 16px 档（本项目无 fullscreen surface）
 
-## 7. 文案语态（Geist voice）
+## 按钮
 
-- 按钮与 nav 标签改 Title Case：`Install FrameCredit`（已符合）、
-  `See how it works` → `See How It Works`、nav `How it works` →
-  `How It Works`；
-- 正文与 FAQ 保持 sentence case；
-- 决策点：section 标题（h2）是否也 Title Case——Geist 对 "titles"
-  用 Title Case，但长句式标题（"What FrameCredit does not promise"）
-  Title Case 会变拗口。倾向：h2 保持 sentence case，只有按钮/标签/nav
-  走 Title Case。待拍板。
+- Primary：#ededed 底 / #000 字 / 500 字重 / 40px 高 / 6px 圆角；
+  hover #cccccc。不套灰阶 100→200→300 递进（那是低对比 surface 的
+  规则，不适用于高对比 primary）。
+- Secondary：#0a0a0a 底 + rgba(255,255,255,.14) 半透明边；
+  hover 边框升 gray-500。
+- 小控件（位置 chips 等）不强行拉到 40px，保持紧凑档，仅统一
+  圆角/颜色/焦点环。
+- 按钮与 nav 标签 Title Case（Geist voice）；章节标题 h2 保持
+  sentence case（taste skill 与 Geist 在此切分下互不冲突，定案）。
 
-## 8. 明确不做
+## 字体
 
-- 不引入 Geist 的浅色模式（页面锁暗色，og/screenshot 均为暗色资产）；
-- 不引入 P3/oklch 双轨 token（单页静态站，收益不值复杂度）；
-- 不改信息架构、锚点 id、文案内容（SEO/结构化数据不受影响）；
-- FAQPage/SoftwareApplication JSON-LD 不动。
+- **App 页：维持系统字体栈（定案）**。理由：canvas 标识预览显式使用
+  系统栈做 JS 度量，导出渲染用 Arial/PingFang/Noto/DejaVu
+  （processing.py），换 Geist 反而拉大预览与导出的差距；
+  打包字体的路由/包体/测试成本对本地工具无收益。
+- **Landing：自托管 Geist variable 字体 ×2**：
+  Geist Sans variable（覆盖 400-600）+ Geist Mono variable（400），
+  woff2 放 site/fonts/，**附 OFL.txt**（SIL OFL 1.1 要求许可文本
+  随字体分发）；只 preload Sans，Mono 常规加载；
+  fallback 保留系统栈；以实际构建产物体积为准，若两个 variable
+  文件反而更大再改静态子集。
+- Landing hero 用较大的 marketing 标题档（56-48px 级），
+  不锁死在 heading-40。
 
-## 9. 验证清单
+## 间距与容器
 
-- 双端截图（1200 / 390 宽）对照改版前；
-- 焦点环键盘走查（Tab 全链路）；
-- 对比度抽查（#8f8f8f on #000 = 7.4:1，#a0a0a0 = 8.3:1，均过 AA）；
-- Lighthouse 性能回归（字体自托管后 LCP 预算 <2.5s，preload 验证）；
-- 零 em-dash、JSON-LD parse、Pages 部署后线上抽查。
+- 4px 尺度审计：组内 8、组间 16、区块间 32-40；卡片 padding 24px。
+- landing shell 1080 → 1200px；**app 页 shell 保持现宽**（双栏平衡
+  与 820px 断点已调好，改宽需重新平衡，收益低）。
+- 断点检查覆盖 390 / 820（app 断点）/ 1200。
 
-## 工作量估计
+## App 页专项
 
-token 替换 + 按钮/圆角/间距（§1/3/4/5）约 1-2 小时；字体自托管（§2）
-约 1 小时（含下载、子集评估、preload 调试）；文案语态（§7）15 分钟；
-验证（§9）30 分钟。合计约半天。
+- 行为零改动：id、API、canvas 绘制逻辑（字体、描边、坐标、尺寸）
+  全部不碰。
+- 不给 marker 预览加任何不透明底（产品声明是 transparent outlined
+  text，页面组件不得与之矛盾）。
+- 补上缺失的可访问性项：drop zone 的键盘焦点态
+  （`:focus-within` 显示 --ds-focus-ring），浏览器测试加断言。
+- Playwright 现有断言只覆盖文案与 canvas 可见性，样式改动后跑
+  全量回归确认未误伤。
+
+## 连锁更新（v2 遗漏，codex 补）
+
+改版完成后按序重制三件视觉资产（app 页样式变了，旧图即过期）：
+
+1. `site/app-screenshot.png`（landing hero + README + JSON-LD 引用）
+2. `site/og.png`（由新截图合成）
+3. GitHub 社交预览图（1280×640，需用户手动重传）
+
+## 明确不做
+
+- 浅色模式；P3/oklch 双轨；信息架构/锚点/JSON-LD 结构改动；
+- app 页字体打包（除非日后用户反馈两页字体差异不可接受，
+  届时走 /fonts 路由 + font/woff2 MIME + 包数据 + 路由测试，
+  CSP 无需改动——default-src 'self' 已覆盖同源字体）。
+
+## 验证清单
+
+1. `tests/test_design_tokens.py` 等值断言通过
+2. 全量 unittest + 强制 Playwright 浏览器测试
+3. 键盘 Tab 走查两页焦点环（含 drop zone）
+4. 对比度实测复核（工具计算，不再手估）
+5. 390/820/1200 三档截图对照
+6. Lighthouse：字体自托管后 LCP < 2.5s，preload 不重复请求
+7. 零 em-dash、JSON-LD parse、Pages 部署后线上抽查
+8. 三件视觉资产重制并验证引用处
+
+## 工作量
+
+token/圆角/按钮双页对齐约 3 小时，landing 字体 1 小时，
+焦点态 + 等值测试 1 小时，资产重制与验证 1.5 小时。约一个工作日。
