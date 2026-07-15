@@ -1,4 +1,5 @@
 import argparse
+from importlib import metadata
 from pathlib import Path
 import sys
 
@@ -6,10 +7,20 @@ from .local_app import run_local_app
 from .processing import ProcessRequest, ProcessingError, create_attributed_export
 
 
+def _version() -> str:
+    try:
+        return metadata.version("framecredit")
+    except metadata.PackageNotFoundError:
+        return "0+unknown"
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="framecredit",
         description="Burn visible creator attribution into a video.",
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {_version()}"
     )
     commands = parser.add_subparsers(dest="command", required=True)
 

@@ -28,7 +28,7 @@ Requires Python 3.11+ and `ffmpeg`/`ffprobe` on `PATH`
 (`brew install ffmpeg` / `apt install ffmpeg`).
 
 ```bash
-python3 -m pip install framecredit
+python3 -m pip install framecredit      # upgrade later with: pip install -U framecredit
 ```
 
 **Command line** - one video in, one Attributed Export out:

@@ -132,6 +132,18 @@ class ProcessCommandTest(unittest.TestCase):
             finally:
                 os.chmod(locked, 0o700)
 
+    def test_version_flag_reports_the_installed_version(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "-m", "framecredit", "--version"],
+            cwd=ROOT,
+            env=self._cli_env(),
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertRegex(result.stdout, r"^framecredit \S+")
+
     def test_process_command_requires_only_the_x_handle_for_creator_identity(self) -> None:
         env = os.environ.copy()
         env["PYTHONPATH"] = str(ROOT / "src")
