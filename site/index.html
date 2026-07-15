@@ -124,19 +124,22 @@
   </script>
 
   <style>
-    /* GEIST TOKENS v1 - duplicated in site/index.html and
+    /* GEIST TOKENS v2 - FrameCredit dark surfaces, derived from Geist dark
+       with lifted backgrounds. Duplicated in site/index.html and
        src/framecredit/static/index.html; tests/test_design_tokens.py
        enforces equality of this block. */
     :root {
       color-scheme: dark;
-      --ds-background-200: #000000;
-      --ds-background-100: #0a0a0a;
+      --ds-background-200: #050505;
+      --ds-background-100: #0d0d0d;
+      --ds-surface-raised: #121212;
+      --ds-surface-hover: #171717;
       --ds-gray-100: #1a1a1a;
-      --ds-gray-400: #2e2e2e;
+      --ds-gray-400: #292929;
       --ds-gray-500: #454545;
       --ds-gray-800: #8f8f8f;
       --ds-gray-900: #a1a1a1;
-      --ds-gray-1000: #ededed;
+      --ds-gray-1000: #f1f1f1;
       --ds-blue-900: #52a8ff;
       --ds-alpha-border: rgb(255 255 255 / .14);
       --ds-radius-control: 6px;
@@ -144,16 +147,16 @@
       --ds-duration-state: 150ms;
       --ds-ease: cubic-bezier(0.175, 0.885, 0.32, 1.1);
     }
-    /* END GEIST TOKENS v1 */
+    /* END GEIST TOKENS v2 */
 
     :root {
-      --bg: #050505;
-      --panel: #0d0d0d;
-      --surface-raised: #121212;
-      --surface-hover: #171717;
-      --line: #292929;
+      --bg: var(--ds-background-200);
+      --panel: var(--ds-background-100);
+      --surface-raised: var(--ds-surface-raised);
+      --surface-hover: var(--ds-surface-hover);
+      --line: var(--ds-gray-400);
       --line-strong: var(--ds-gray-500);
-      --text: #f1f1f1;
+      --text: var(--ds-gray-1000);
       --muted: var(--ds-gray-900);
     }
 

@@ -6,19 +6,22 @@
   <title>FrameCredit · Local video attribution</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ededed'/%3E%3Cg transform='translate(3.2,3.2) scale(0.8)'%3E%3Cmask id='m'%3E%3Crect width='32' height='32' fill='white'/%3E%3Crect x='9.8' y='10.8' width='22' height='18.4' rx='6' fill='black'/%3E%3C/mask%3E%3Cg mask='url(%23m)'%3E%3Crect x='2.4' y='5' width='17.6' height='14' rx='4' fill='none' stroke='%23000' stroke-width='2.6'/%3E%3Crect x='5.6' y='13.9' width='3.8' height='2.6' rx='1.3' fill='%23000'/%3E%3C/g%3E%3Crect x='12' y='13' width='17.6' height='14' rx='4' fill='none' stroke='%23000' stroke-width='2.6'/%3E%3Crect x='21.4' y='21.9' width='4.6' height='2.6' rx='1.3' fill='%23000'/%3E%3C/g%3E%3C/svg%3E">
   <style>
-    /* GEIST TOKENS v1 - duplicated in site/index.html and
+    /* GEIST TOKENS v2 - FrameCredit dark surfaces, derived from Geist dark
+       with lifted backgrounds. Duplicated in site/index.html and
        src/framecredit/static/index.html; tests/test_design_tokens.py
        enforces equality of this block. */
     :root {
       color-scheme: dark;
-      --ds-background-200: #000000;
-      --ds-background-100: #0a0a0a;
+      --ds-background-200: #050505;
+      --ds-background-100: #0d0d0d;
+      --ds-surface-raised: #121212;
+      --ds-surface-hover: #171717;
       --ds-gray-100: #1a1a1a;
-      --ds-gray-400: #2e2e2e;
+      --ds-gray-400: #292929;
       --ds-gray-500: #454545;
       --ds-gray-800: #8f8f8f;
       --ds-gray-900: #a1a1a1;
-      --ds-gray-1000: #ededed;
+      --ds-gray-1000: #f1f1f1;
       --ds-blue-900: #52a8ff;
       --ds-alpha-border: rgb(255 255 255 / .14);
       --ds-radius-control: 6px;
@@ -26,7 +29,7 @@
       --ds-duration-state: 150ms;
       --ds-ease: cubic-bezier(0.175, 0.885, 0.32, 1.1);
     }
-    /* END GEIST TOKENS v1 */
+    /* END GEIST TOKENS v2 */
 
     :root {
       --bg: var(--ds-background-200);

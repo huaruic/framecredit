@@ -9,7 +9,7 @@ LANDING = ROOT / "site" / "index.html"
 APP = ROOT / "src" / "framecredit" / "static" / "index.html"
 
 BLOCK = re.compile(
-    r"/\* GEIST TOKENS v1.*?/\* END GEIST TOKENS v1 \*/", re.DOTALL
+    r"/\* GEIST TOKENS v\d+.*?/\* END GEIST TOKENS v\d+ \*/", re.DOTALL
 )
 
 
