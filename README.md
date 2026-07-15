@@ -28,8 +28,13 @@ Requires Python 3.11+ and `ffmpeg`/`ffprobe` on `PATH`
 (`brew install ffmpeg` / `apt install ffmpeg`).
 
 ```bash
-python3 -m pip install framecredit      # upgrade later with: pip install -U framecredit
+python3 -m pip install framecredit      # upgrade: python3 -m pip install -U framecredit
 ```
+
+Not a developer? `uv` manages Python for you, so two commands are enough
+(macOS: `brew install uv ffmpeg`, then `uv tool install framecredit`).
+See the [install guide](https://huaruic.com/framecredit/#install) for
+Windows and Linux one-liners.
 
 **Command line** - one video in, one Attributed Export out:
 

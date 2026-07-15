@@ -104,6 +104,14 @@
       },
       {
         "@type": "Question",
+        "name": "Do I need to know Python to use FrameCredit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Install the uv tool and ffmpeg, then run uv tool install framecredit; uv downloads and manages Python for you. After that a single command, framecredit app, opens the drag-and-drop interface in your browser. The install section above has copy-paste commands for macOS, Windows, and Linux."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Where are Attributed Exports saved?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -501,10 +509,31 @@
           <h3>Install with pip</h3>
           <p>FrameCredit is on PyPI:</p>
           <pre><code>python3 -m pip install framecredit</code></pre>
-          <p>Or install the latest development version from source:</p>
+          <p>Upgrade later with <code>python3 -m pip install -U framecredit</code>. Or install the latest development version from source:</p>
           <pre><code>git clone https://github.com/huaruic/framecredit.git
 cd framecredit
 python3 -m pip install -e .</code></pre>
+        </div>
+
+        <div class="install-block">
+          <h3>Not a developer? Two commands, no Python setup</h3>
+          <p>The <code>uv</code> installer manages Python for you, so you only need it and ffmpeg.</p>
+          <p>macOS (with Homebrew):</p>
+          <pre><code>brew install uv ffmpeg
+uv tool install framecredit</code></pre>
+          <p>Windows (PowerShell):</p>
+          <pre><code>winget install astral-sh.uv
+winget install --id Gyan.FFmpeg.Essentials -e --source winget
+uv tool install framecredit</code></pre>
+          <p>Debian/Ubuntu:</p>
+          <pre><code>sudo apt update &amp;&amp; sudo apt install ffmpeg
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install framecredit</code></pre>
+          <p>Open a new terminal so your PATH refreshes, then confirm everything is ready:</p>
+          <pre><code>framecredit --version
+ffmpeg -version
+ffprobe -version</code></pre>
+          <p>Then start the app with <code>framecredit app</code> (details below). Upgrade later with <code>uv tool upgrade framecredit</code>.</p>
         </div>
 
         <div class="install-block">
@@ -570,6 +599,10 @@ python3 -m pip install -e .</code></pre>
           <details>
             <summary><h3>What do I need to run FrameCredit?</h3></summary>
             <p>Python 3.11 or later, plus <code>ffmpeg</code> and <code>ffprobe</code> on your <code>PATH</code>. Install it from PyPI with <code>pip install framecredit</code>. It ships as a command line tool with an optional local drag-and-drop app started by <code>framecredit app</code>.</p>
+          </details>
+          <details>
+            <summary><h3>Do I need to know Python to use FrameCredit?</h3></summary>
+            <p>No. Install the uv tool and ffmpeg, then run <code>uv tool install framecredit</code>; uv downloads and manages Python for you. After that a single command, <code>framecredit app</code>, opens the drag-and-drop interface in your browser. The install section above has copy-paste commands for macOS, Windows, and Linux.</p>
           </details>
           <details>
             <summary><h3>Where are Attributed Exports saved?</h3></summary>

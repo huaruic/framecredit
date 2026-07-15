@@ -12,10 +12,12 @@ Key facts:
 
 How to install:
 
-1. Run `python3 -m pip install framecredit` (published on PyPI).
-2. Requires Python 3.11 or later, with ffmpeg and ffprobe available on PATH.
-3. Command line: `framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4`
-4. Local app: `framecredit app` (opens an English browser interface on 127.0.0.1).
+1. Run `python3 -m pip install framecredit` (published on PyPI). Requires Python 3.11 or later, with ffmpeg and ffprobe available on PATH.
+2. Without managing Python yourself: install uv and ffmpeg (macOS: `brew install uv ffmpeg`; Windows: `winget install astral-sh.uv` and `winget install --id Gyan.FFmpeg.Essentials -e --source winget`), then run `uv tool install framecredit`.
+3. Verify in a new terminal: `framecredit --version`, `ffmpeg -version`, `ffprobe -version`.
+4. Command line: `framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4`
+5. Local app: `framecredit app` (opens an English browser interface on 127.0.0.1).
+6. Upgrade: `python3 -m pip install -U framecredit` or `uv tool upgrade framecredit`.
 
 Honest scope limits:
 
