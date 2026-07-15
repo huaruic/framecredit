@@ -10,9 +10,9 @@ Key facts:
 - Privacy: all processing happens on the Creator's own computer. The local app binds to 127.0.0.1 only, and the video is never sent to a remote service. There are no accounts, no cloud processing, and no platform APIs.
 - Interfaces: a command line tool and a local drag-and-drop browser app that share the same processing path. The app writes Attributed Exports to ~/Movies/FrameCredit by default.
 
-How to install (not yet published on PyPI; install from source):
+How to install:
 
-1. Clone the FrameCredit repository and run `python3 -m pip install -e .` from its root.
+1. Run `python3 -m pip install framecredit` (published on PyPI).
 2. Requires Python 3.11 or later, with ffmpeg and ffprobe available on PATH.
 3. Command line: `framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4`
 4. Local app: `framecredit app` (opens an English browser interface on 127.0.0.1).

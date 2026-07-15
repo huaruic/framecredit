@@ -14,9 +14,7 @@ FrameCredit 把一个紧凑的描边文字标识 `X · @你的用户名` 直接�
 需要 Python 3.11+ 和 `ffmpeg`/`ffprobe`（macOS：`brew install ffmpeg`）。
 
 ```bash
-git clone https://github.com/huaruic/framecredit.git
-cd framecredit
-python3 -m pip install -e .
+python3 -m pip install framecredit
 ```
 
 命令行：

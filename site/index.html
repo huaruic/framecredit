@@ -99,7 +99,7 @@
         "name": "What do I need to run FrameCredit?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Python 3.11 or later, plus ffmpeg and ffprobe on your PATH. FrameCredit is not yet published on PyPI, so you install it from source with pip. It ships as a command line tool with an optional local drag-and-drop app started by framecredit app."
+          "text": "Python 3.11 or later, plus ffmpeg and ffprobe on your PATH. Install it from PyPI with pip install framecredit. It ships as a command line tool with an optional local drag-and-drop app started by framecredit app."
         }
       },
       {
@@ -498,8 +498,10 @@
         <p class="req">Requires <code>Python 3.11+</code> with <code>ffmpeg</code> and <code>ffprobe</code> on <code>PATH</code>.</p>
 
         <div class="install-block">
-          <h3>Install from source</h3>
-          <p>FrameCredit is not yet published on PyPI, so install it from source with pip:</p>
+          <h3>Install with pip</h3>
+          <p>FrameCredit is on PyPI:</p>
+          <pre><code>python3 -m pip install framecredit</code></pre>
+          <p>Or install the latest development version from source:</p>
           <pre><code>git clone https://github.com/huaruic/framecredit.git
 cd framecredit
 python3 -m pip install -e .</code></pre>
@@ -567,7 +569,7 @@ python3 -m pip install -e .</code></pre>
           </details>
           <details>
             <summary><h3>What do I need to run FrameCredit?</h3></summary>
-            <p>Python 3.11 or later, plus <code>ffmpeg</code> and <code>ffprobe</code> on your <code>PATH</code>. FrameCredit is not yet published on PyPI, so you install it from source with pip. It ships as a command line tool with an optional local drag-and-drop app started by <code>framecredit app</code>.</p>
+            <p>Python 3.11 or later, plus <code>ffmpeg</code> and <code>ffprobe</code> on your <code>PATH</code>. Install it from PyPI with <code>pip install framecredit</code>. It ships as a command line tool with an optional local drag-and-drop app started by <code>framecredit app</code>.</p>
           </details>
           <details>
             <summary><h3>Where are Attributed Exports saved?</h3></summary>
