@@ -239,6 +239,7 @@
     .hero { padding: 72px 0 0; }
     h1 {
       margin: 0 0 14px;
+      text-wrap: balance;
       font-size: clamp(38px, 5.8vw, 56px);
       font-weight: 600;
       letter-spacing: -.04em;
@@ -289,6 +290,7 @@
 
     h2 {
       margin: 0 0 16px;
+      text-wrap: balance;
       font-size: 28px;
       font-weight: 600;
       letter-spacing: -.025em;
@@ -363,6 +365,31 @@
     .marker-note { margin-top: 14px; color: var(--muted); font-size: 13px; text-align: center; }
 
     /* Install */
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 28px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--ds-radius-surface);
+      overflow: hidden;
+    }
+    .platform-cell { min-width: 0; padding: 20px; background: var(--bg); }
+    .platform-cell h3 { margin-bottom: 12px; }
+    .platform-cell pre { margin: 0; border: 0; border-radius: 0; padding: 0; background: transparent; }
+    .platform-cell pre code { white-space: pre-wrap; word-break: break-word; }
+
+    .alt-install { margin-top: 32px; }
+    .alt-install summary {
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      transition: color var(--ds-duration-state) var(--ds-ease);
+    }
+    .alt-install summary:hover { color: var(--text); }
+    .alt-install p { max-width: 68ch; margin-top: 14px; color: var(--muted); }
+
     .install-block { margin-top: 36px; }
     .install-block + .install-block { margin-top: 40px; }
     .install-block p { max-width: 68ch; color: var(--muted); }
@@ -428,6 +455,10 @@
     .foot-row nav a:hover { color: var(--text); }
     .foot-note { margin-top: 18px; color: var(--muted); font-size: 13px; }
 
+    @media (max-width: 950px) {
+      .platform-grid { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 760px) {
       .shell { width: min(100% - 32px, 640px); }
       .hero { padding-top: 48px; }
@@ -471,10 +502,12 @@
     <section class="band" id="what-is" aria-labelledby="what-is-h">
       <div class="shell">
         <h2 id="what-is-h">What is FrameCredit?</h2>
-        <div class="prose">
-          <p>FrameCredit is a local video processing tool that burns visible attribution into a video before it is uploaded to X. You save your X handle once, drop in a finished video, and FrameCredit produces an Attributed Export: a normal MP4 whose frames carry a compact <code>X · @handle</code> Creator Marker.</p>
-          <p>If the video is downloaded and reposted, the copied file still shows who made it. The marker is burned into the rendered frames rather than stored as metadata, so stripping metadata does not remove it, and viewers can search for your handle even when the repost carries no link back to you.</p>
-        </div>
+        <p class="prose">FrameCredit is a local video attribution tool for X creators. It burns a compact <code>X · @handle</code> Creator Marker into the frames of your video before you publish, so downloaded and reposted copies still show viewers who made it.</p>
+        <ul class="marker-facts">
+          <li>Rendered into the pixels, so stripping metadata does not remove it.</li>
+          <li>Video processing stays local; the app binds to <code>127.0.0.1</code> and uploads nothing.</li>
+          <li>Viewers can search for your handle even when a repost carries no link back.</li>
+        </ul>
       </div>
     </section>
 
@@ -486,19 +519,19 @@
           <li>
             <div>
               <h3>Save your X handle once</h3>
-              <p>FrameCredit remembers it and previews the exact <code>X · @handle</code> identity before anything is burned in, so a typo never ends up in a long export.</p>
+              <p>FrameCredit remembers it and previews the exact marker before anything is burned in.</p>
             </div>
           </li>
           <li>
             <div>
               <h3>Drop in a video</h3>
-              <p>FrameCredit burns a compact outlined <code>X · @handle</code> marker into every frame, alternating between the two top corners every 30 seconds so it never parks in one spot or drifts across the picture.</p>
+              <p>FrameCredit burns the outlined marker into every frame, alternating top corners every 30 seconds.</p>
             </div>
           </li>
           <li>
             <div>
               <h3>Publish the Attributed Export</h3>
-              <p>Take the finished file from <code>~/Movies/FrameCredit</code> and upload it to X as usual. It is an MP4 with H.264 video and AAC audio that keeps the source dimensions and audio track, with duration within 150 milliseconds of the source.</p>
+              <p>Upload the finished H.264/AAC MP4 from <code>~/Movies/FrameCredit</code> to X as usual.</p>
             </div>
           </li>
         </ol>
@@ -529,51 +562,40 @@
     <section class="band" id="install" aria-labelledby="install-h">
       <div class="shell">
         <h2 id="install-h">Install FrameCredit</h2>
-        <p class="req">Requires <code>Python 3.11+</code> with <code>ffmpeg</code> and <code>ffprobe</code> on <code>PATH</code>.</p>
+        <p class="req">Requires <code>ffmpeg</code> and <code>ffprobe</code>; <code>uv</code> manages Python for you.</p>
+
+        <div class="platform-grid">
+          <div class="platform-cell">
+            <h3>macOS</h3>
+            <pre><code>brew install uv ffmpeg</code></pre>
+          </div>
+          <div class="platform-cell">
+            <h3>Windows</h3>
+            <pre><code>winget install astral-sh.uv
+winget install --id Gyan.FFmpeg.Essentials -e --source winget</code></pre>
+          </div>
+          <div class="platform-cell">
+            <h3>Debian/Ubuntu</h3>
+            <pre><code>sudo apt update &amp;&amp; sudo apt install ffmpeg
+curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+          </div>
+        </div>
 
         <div class="install-block">
-          <h3>Install with pip</h3>
-          <p>FrameCredit is on PyPI:</p>
+          <p>Then, in a new terminal:</p>
+          <pre><code>uv tool install framecredit
+framecredit app</code></pre>
+          <p><code>framecredit app</code> opens the drag-and-drop interface on <code>127.0.0.1</code>; Attributed Exports land in <code>~/Movies/FrameCredit</code>. Prefer the terminal? <code>framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4</code></p>
+        </div>
+
+        <details class="alt-install">
+          <summary>Alternative installation (pip, from source)</summary>
           <pre><code>python3 -m pip install framecredit</code></pre>
-          <p>Upgrade later with <code>python3 -m pip install -U framecredit</code>. Or install the latest development version from source:</p>
+          <p>Needs your own Python 3.11+. Upgrade with <code>python3 -m pip install -U framecredit</code> or <code>uv tool upgrade framecredit</code>. Development version:</p>
           <pre><code>git clone https://github.com/huaruic/framecredit.git
 cd framecredit
 python3 -m pip install -e .</code></pre>
-        </div>
-
-        <div class="install-block">
-          <h3>Not a developer? Two commands, no Python setup</h3>
-          <p>The <code>uv</code> installer manages Python for you, so you only need it and ffmpeg.</p>
-          <p>macOS (with Homebrew):</p>
-          <pre><code>brew install uv ffmpeg
-uv tool install framecredit</code></pre>
-          <p>Windows (PowerShell):</p>
-          <pre><code>winget install astral-sh.uv
-winget install --id Gyan.FFmpeg.Essentials -e --source winget
-uv tool install framecredit</code></pre>
-          <p>Debian/Ubuntu:</p>
-          <pre><code>sudo apt update &amp;&amp; sudo apt install ffmpeg
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv tool install framecredit</code></pre>
-          <p>Open a new terminal so your PATH refreshes, then confirm everything is ready:</p>
-          <pre><code>framecredit --version
-ffmpeg -version
-ffprobe -version</code></pre>
-          <p>Then start the app with <code>framecredit app</code> (details below). Upgrade later with <code>uv tool upgrade framecredit</code>.</p>
-        </div>
-
-        <div class="install-block">
-          <h3>Create an Attributed Export from the command line</h3>
-          <p>Point <code>framecredit process</code> at a finished video with your handle:</p>
-          <pre><code>framecredit process input.mp4 --x-handle "@yourhandle" --output attributed.mp4</code></pre>
-        </div>
-
-        <div class="install-block">
-          <h3>Or run the local drag-and-drop app</h3>
-          <p>One command opens an English browser interface where you save your handle, preview the marker, and drag in a video:</p>
-          <pre><code>framecredit app</code></pre>
-          <p>The interface listens only on <code>127.0.0.1</code> and writes Attributed Exports to <code>~/Movies/FrameCredit</code> by default. Keep the terminal running while you use it; press <code>Ctrl+C</code> to stop.</p>
-        </div>
+        </details>
       </div>
     </section>
 
@@ -581,8 +603,7 @@ ffprobe -version</code></pre>
       <div class="shell">
         <h2 id="privacy-h">Processed locally, start to finish</h2>
         <div class="prose">
-          <p><strong>Your video never leaves your machine.</strong> FrameCredit does all of its processing on your own computer: the local app binds to <code>127.0.0.1</code> only, the video is streamed to the FrameCredit process on the same computer, and nothing is sent to a remote service.</p>
-          <p>There are no accounts, no cloud processing, and no platform APIs. Unpublished footage stays unpublished until you upload the Attributed Export yourself.</p>
+          <p><strong>Your video never leaves your machine.</strong> The app binds to <code>127.0.0.1</code> only; there are no accounts, no cloud processing, and no platform APIs.</p>
         </div>
       </div>
     </section>
@@ -591,7 +612,7 @@ ffprobe -version</code></pre>
       <div class="shell">
         <h2 id="scope-h">What FrameCredit does not promise</h2>
         <div class="prose">
-          <p>FrameCredit's promise is <strong>Attribution Survival</strong>, not theft prevention. It makes your identity travel with an Ordinary Repost: a copied upload that keeps most of the content, including re-encodes and light edits. It does not try to make copying impossible.</p>
+          <p>FrameCredit’s promise is <strong>Attribution Survival</strong>, not theft prevention. It makes your identity travel with an Ordinary Repost: a copied upload that keeps most of the content, including re-encodes and light edits. It does not try to make copying impossible.</p>
           <p>A burned-in marker is pixels, not a hyperlink. It cannot be a clickable link or a QR code; a mention becomes clickable only in X post text, which an independently re-uploaded file cannot preserve.</p>
           <p>Determined editing can defeat any visible marker. Someone willing to crop, cover, or reconstruct frames can remove attribution, and that remains outside what FrameCredit claims to solve.</p>
         </div>
