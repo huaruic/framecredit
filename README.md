@@ -22,19 +22,51 @@ Everything runs on your own machine. No accounts, no uploads, no cloud.
 **[Changelog](CHANGELOG.md)** ·
 **[简体中文](README.zh-CN.md)**
 
-## Quick start
+## Install
 
-Requires Python 3.11+ and `ffmpeg`/`ffprobe` on `PATH`
-(`brew install ffmpeg` / `apt install ffmpeg`).
+FrameCredit needs `ffmpeg`/`ffprobe` on `PATH`. The `uv` route below also
+manages Python for you; if you already have Python 3.11+, plain pip works
+too.
+
+**macOS**
 
 ```bash
-python3 -m pip install framecredit      # upgrade: python3 -m pip install -U framecredit
+brew install uv ffmpeg
+uv tool install framecredit
 ```
 
-Not a developer? `uv` manages Python for you, so two commands are enough
-(macOS: `brew install uv ffmpeg`, then `uv tool install framecredit`).
-See the [install guide](https://huaruic.com/framecredit/#install) for
-Windows and Linux one-liners.
+**Windows (PowerShell)**
+
+```powershell
+winget install astral-sh.uv
+winget install --id Gyan.FFmpeg.Essentials -e --source winget
+uv tool install framecredit
+```
+
+**Debian/Ubuntu**
+
+```bash
+sudo apt update && sudo apt install ffmpeg
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install framecredit
+```
+
+**With an existing Python 3.11+**
+
+```bash
+python3 -m pip install framecredit
+```
+
+Open a new terminal, then confirm everything is ready:
+
+```bash
+framecredit --version && ffmpeg -version && ffprobe -version
+```
+
+Upgrade later with `uv tool upgrade framecredit` or
+`python3 -m pip install -U framecredit`.
+
+## Quick start
 
 **Command line** - one video in, one Attributed Export out:
 

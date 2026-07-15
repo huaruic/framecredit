@@ -9,17 +9,44 @@ FrameCredit 把一个紧凑的描边文字标识 `X · @你的用户名` 直接�
 
 全部在你自己的电脑上运行：无账号、无上传、无云端。
 
-## 快速开始
+## 安装
 
-需要 Python 3.11+ 和 `ffmpeg`/`ffprobe`（macOS：`brew install ffmpeg`）。
+需要 `ffmpeg`/`ffprobe` 在 PATH 上。下面的 `uv` 路线会自动管理 Python；
+已有 Python 3.11+ 的话直接用 pip 也行。
+
+**macOS**
 
 ```bash
-python3 -m pip install framecredit      # 升级：python3 -m pip install -U framecredit
+brew install uv ffmpeg
+uv tool install framecredit
 ```
 
-不是开发者？用 `uv` 就不用自己装 Python：macOS 上
-`brew install uv ffmpeg` 然后 `uv tool install framecredit` 即可，
-Windows/Linux 命令见[安装指南](https://huaruic.com/framecredit/#install)。
+**Windows（PowerShell）**
+
+```powershell
+winget install astral-sh.uv
+winget install --id Gyan.FFmpeg.Essentials -e --source winget
+uv tool install framecredit
+```
+
+**Debian/Ubuntu**
+
+```bash
+sudo apt update && sudo apt install ffmpeg
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install framecredit
+```
+
+**已有 Python 3.11+**
+
+```bash
+python3 -m pip install framecredit
+```
+
+新开一个终端验证：`framecredit --version && ffmpeg -version && ffprobe -version`。
+升级：`uv tool upgrade framecredit` 或 `python3 -m pip install -U framecredit`。
+
+## 快速开始
 
 命令行：
 
